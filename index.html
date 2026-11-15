@@ -44,6 +44,8 @@
   <symbol id="i-moon" viewBox="0 0 24 24"><path d="M21 12.8A8.5 8.5 0 1 1 11.2 3a6.6 6.6 0 0 0 9.8 9.8Z"/></symbol>
   <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M19.1 4.9l-1.4 1.4M6.3 17.7l-1.4 1.4"/></symbol>
   <symbol id="i-star" viewBox="0 0 24 24"><path d="m12 3 2.6 5.5 6 .8-4.4 4.2 1.1 6-5.3-2.9-5.3 2.9 1.1-6L3.4 9.3l6-.8L12 3Z" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="i-news" viewBox="0 0 24 24"><path d="M4 5h13v14H5.5A1.5 1.5 0 0 1 4 17.5V5Z"/><path d="M17 8h3v9.5a1.5 1.5 0 0 1-3 0V8Z"/><path d="M7 8h7M7 11h7M7 14h4"/></symbol>
+  <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></symbol>
 </svg>
 
 <div class="app-shell">
@@ -79,11 +81,13 @@
     <nav class="side-nav" aria-label="섹션 이동">
       <span class="side-label">MENU</span>
       <a href="#overview" class="active"><svg class="icon"><use href="#i-grid"></use></svg><span>대시보드</span><small>01</small></a>
-      <a href="#schedule"><svg class="icon"><use href="#i-calendar"></use></svg><span>경기 일정</span><small>02</small></a>
-      <a href="#roster"><svg class="icon"><use href="#i-users"></use></svg><span>선수단</span><small>03</small></a>
-      <a href="#tv"><svg class="icon"><use href="#i-play"></use></svg><span>라이온즈TV</span><small>04</small></a>
-      <a href="#sns"><svg class="icon"><use href="#i-share"></use></svg><span>SNS · 링크</span><small>05</small></a>
-      <a href="#fanzone"><svg class="icon"><use href="#i-heart"></use></svg><span>팬 보드</span><small>06</small></a>
+      <a href="#fa"><svg class="icon"><use href="#i-star"></use></svg><span>FA · 뉴스</span><small>02</small></a>
+      <a href="#schedule"><svg class="icon"><use href="#i-calendar"></use></svg><span>경기 일정</span><small>03</small></a>
+      <a href="#stats"><svg class="icon"><use href="#i-chart"></use></svg><span>선수 기록</span><small>04</small></a>
+      <a href="#roster"><svg class="icon"><use href="#i-users"></use></svg><span>선수단</span><small>05</small></a>
+      <a href="#tv"><svg class="icon"><use href="#i-play"></use></svg><span>라이온즈TV</span><small>06</small></a>
+      <a href="#sns"><svg class="icon"><use href="#i-share"></use></svg><span>SNS · 링크</span><small>07</small></a>
+      <a href="#fanzone"><svg class="icon"><use href="#i-heart"></use></svg><span>팬 보드</span><small>08</small></a>
     </nav>
 
     <div class="side-v10">
@@ -121,7 +125,7 @@
         <div class="top-date">
           <svg class="icon"><use href="#i-clock"></use></svg>
           <span id="todayLabel">2026.11.15 SUN</span>
-          <em class="live-pill"><i></i>OFFSEASON</em>
+          <em class="live-pill"><i></i>FA MARKET</em>
         </div>
         <button class="icon-btn theme-toggle top-theme" type="button" data-theme-toggle aria-label="테마 변경">
           <svg class="icon ic-moon"><use href="#i-moon"></use></svg>
@@ -210,6 +214,44 @@
           <p class="kpi-sub">24,000석 · 첫 우승</p>
         </article>
 
+        <!-- FA TRACKER -->
+        <article class="widget fa-widget span-6 reveal" id="fa">
+          <div class="widget-head">
+            <div class="widget-title">
+              <span class="w-icon w-icon-gold"><svg class="icon"><use href="#i-star"></use></svg></span>
+              <div><h2>2027 FA 트래커</h2><p id="faSub">삼성 3명 · 11.17 협상 개시</p></div>
+            </div>
+            <span class="mini-badge badge-gold">STOVE LEAGUE</span>
+          </div>
+          <div class="fa-hero">
+            <span class="fa-hero-mark" aria-hidden="true">FA</span>
+            <div>
+              <strong id="faHeadline">구자욱·원태인, 둘 다 잡는다</strong>
+              <p id="faSummary">KBO가 2027년 FA 자격 28명을 공시했습니다. 삼성은 A등급 구자욱·원태인, C등급 전병우까지 3명입니다.</p>
+            </div>
+          </div>
+          <div class="fa-players" id="faPlayers"></div>
+          <ol class="fa-dates" id="faDates"></ol>
+          <p class="fa-note" id="faNote"></p>
+        </article>
+
+        <!-- NEWS -->
+        <article class="widget news-widget span-6 reveal" id="news">
+          <div class="widget-head">
+            <div class="widget-title">
+              <span class="w-icon"><svg class="icon"><use href="#i-news"></use></svg></span>
+              <div><h2>라이온즈 뉴스</h2><p>2026년 11월 · 최신 5건</p></div>
+            </div>
+            <a class="w-link" href="https://www.samsunglions.com/intro/intro02.asp" target="_blank" rel="noopener">공식 소식 ↗</a>
+          </div>
+          <div class="news-feature" id="newsFeature"></div>
+          <ul class="news-list" id="newsList"></ul>
+          <div class="widget-foot">
+            <span class="foot-note">기사 원문으로 연결됩니다</span>
+            <span class="foot-note" id="newsUpdated">2026.11.15 기준</span>
+          </div>
+        </article>
+
         <!-- SCHEDULE -->
         <article class="widget schedule-widget span-7 reveal" id="schedule">
           <div class="widget-head">
@@ -219,14 +261,26 @@
             </div>
             <a class="w-link" href="magazine.html#schedule">전체 일정 ↗</a>
           </div>
-          <div class="mini-tabs" id="scheduleTabs" role="group" aria-label="경기 필터">
-            <button class="mini-tab active" data-schedule-filter="all" type="button">전체</button>
-            <button class="mini-tab" data-schedule-filter="home" type="button">홈</button>
-            <button class="mini-tab" data-schedule-filter="away" type="button">원정</button>
-            <button class="mini-tab" data-schedule-filter="win" type="button">승리</button>
-            <span class="mini-tabs-note" id="scheduleCount">10경기</span>
+          <div class="schedule-toolbar">
+            <div class="mini-tabs" id="scheduleTabs" role="group" aria-label="경기 필터">
+              <button class="mini-tab active" data-schedule-filter="all" type="button">전체</button>
+              <button class="mini-tab" data-schedule-filter="home" type="button">홈</button>
+              <button class="mini-tab" data-schedule-filter="away" type="button">원정</button>
+              <button class="mini-tab" data-schedule-filter="win" type="button">승리</button>
+            </div>
+            <div class="schedule-tools">
+              <span class="mini-tabs-note" id="scheduleCount">10경기</span>
+              <div class="view-toggle" role="group" aria-label="보기 방식">
+                <button class="view-btn active" data-schedule-view="calendar" type="button">캘린더</button>
+                <button class="view-btn" data-schedule-view="list" type="button">리스트</button>
+              </div>
+            </div>
           </div>
-          <div class="dash-schedule" id="dashSchedule"></div>
+          <div class="schedule-view" id="scheduleCalendar">
+            <div class="cal-months" id="calMonths"></div>
+            <div class="cal-detail" id="calDetail" aria-live="polite"></div>
+          </div>
+          <div class="dash-schedule" id="dashSchedule" hidden></div>
           <div class="widget-foot">
             <button class="foot-link" id="icsBtn" type="button"><svg class="icon"><use href="#i-calendar"></use></svg> 캘린더 저장</button>
             <a class="foot-link" href="https://www.koreabaseball.com" target="_blank" rel="noopener">KBO 일정 ↗</a>
@@ -259,6 +313,35 @@
           <div class="next-note"><span aria-hidden="true">🦁</span> 다음 별까지, 함께 달립니다.</div>
         </article>
 
+        <!-- STATS -->
+        <article class="widget stats-widget span-6 reveal" id="stats">
+          <div class="widget-head">
+            <div class="widget-title">
+              <span class="w-icon w-icon-gold"><svg class="icon"><use href="#i-chart"></use></svg></span>
+              <div><h2>2026 선수 기록</h2><p>OPS · 타율 · ERA 스포트라이트</p></div>
+            </div>
+            <span class="mini-badge">2026 SEASON</span>
+          </div>
+          <div class="stat-feature" id="statFeature"></div>
+          <div class="stat-mini-grid" id="statMini"></div>
+          <p class="stats-note" id="statsNote"></p>
+        </article>
+
+        <!-- STANDINGS -->
+        <article class="widget standings-widget span-6 reveal">
+          <div class="widget-head">
+            <div class="widget-title">
+              <span class="w-icon"><svg class="icon"><use href="#i-chart"></use></svg></span>
+              <div><h2>2026 정규시즌 최종 순위</h2><p>상위 5팀 · KT 1위 / 삼성 2위</p></div>
+            </div>
+            <a class="w-link" href="https://www.koreabaseball.com" target="_blank" rel="noopener">KBO ↗</a>
+          </div>
+          <table class="standings-table">
+            <thead><tr><th>#</th><th>팀</th><th>승</th><th>패</th><th>무</th><th>승률</th></tr></thead>
+            <tbody id="standingsBody"></tbody>
+          </table>
+        </article>
+
         <!-- ROSTER -->
         <article class="widget roster-widget span-8 reveal" id="roster">
           <div class="widget-head">
@@ -282,29 +365,38 @@
             </label>
           </div>
           <div class="dash-roster-grid" id="dashRoster"></div>
-          <p class="widget-note">SNS는 이름 검색으로 연결됩니다. 카드를 누르면 Instagram 검색으로 이동해요.</p>
+          <p class="widget-note">사진이 있는 선수는 Wikimedia Commons 무료 라이선스 이미지, 나머지는 스타일 카드로 표시합니다. 카드를 누르면 Instagram 검색으로 이동해요.</p>
+          <details class="photo-credits">
+            <summary>사진 출처 · 라이선스</summary>
+            <ul id="photoCredits"></ul>
+          </details>
         </article>
 
         <!-- FAN BOARD -->
         <article class="widget fan-widget span-4 reveal" id="fanzone">
           <div class="widget-head">
             <div class="widget-title">
-              <span class="w-icon"><svg class="icon"><use href="#i-heart"></use></svg></span>
-              <div><h2>팬 보드</h2><p>오늘의 응원 한마디</p></div>
+              <span class="w-icon w-icon-gold"><svg class="icon"><use href="#i-heart"></use></svg></span>
+              <div><h2>팬 보드</h2><p>모두 함께 보는 응원</p></div>
             </div>
-            <span class="mini-badge" id="boardTotal">0개</span>
+            <span class="mini-badge badge-live" id="boardTotal">0개</span>
+          </div>
+          <div class="board-share-note">
+            <span class="board-dot" aria-hidden="true"></span>
+            GitHub 공유 보드 · 다른 팬의 글도 보입니다
           </div>
           <form class="dash-cheer-form" id="cheerForm">
             <input type="text" id="cheerName" maxlength="12" placeholder="닉네임" aria-label="닉네임" required />
             <div class="cheer-input-row">
               <input type="text" id="cheerMsg" maxlength="80" placeholder="최강삼성! 🦁" aria-label="응원 메시지" required />
-              <button class="send-btn" type="submit" aria-label="응원 남기기"><svg class="icon"><use href="#i-send"></use></svg></button>
+              <button class="send-btn" type="submit" aria-label="GitHub에 응원 남기기" title="GitHub에서 작성"><svg class="icon"><use href="#i-send"></use></svg></button>
             </div>
           </form>
           <ul class="dash-cheer-list" id="cheerList"></ul>
+          <p class="board-status" id="boardStatus" role="status"></p>
           <div class="widget-foot">
-            <a class="foot-link" href="magazine.html#fanzone">전체 보드 ↗</a>
-            <span class="foot-note">이 브라우저에 저장</span>
+            <button class="foot-link" id="boardRefresh" type="button"><svg class="icon"><use href="#i-refresh"></use></svg> 새로고침</button>
+            <a class="foot-link" href="https://github.com/vamoslions/lionsfan/issues" target="_blank" rel="noopener">GitHub에서 보기 ↗</a>
           </div>
         </article>
 
@@ -344,23 +436,8 @@
           </div>
         </article>
 
-        <!-- STANDINGS -->
-        <article class="widget standings-widget span-6 reveal">
-          <div class="widget-head">
-            <div class="widget-title">
-              <span class="w-icon"><svg class="icon"><use href="#i-chart"></use></svg></span>
-              <div><h2>2026 정규시즌 최종 순위</h2><p>상위 5팀 · KT 1위 / 삼성 2위</p></div>
-            </div>
-            <a class="w-link" href="https://www.koreabaseball.com" target="_blank" rel="noopener">KBO ↗</a>
-          </div>
-          <table class="standings-table">
-            <thead><tr><th>#</th><th>팀</th><th>승</th><th>패</th><th>무</th><th>승률</th></tr></thead>
-            <tbody id="standingsBody"></tbody>
-          </table>
-        </article>
-
         <!-- HISTORY -->
-        <article class="widget history-widget span-6 reveal">
+        <article class="widget history-widget span-12 reveal">
           <div class="widget-head">
             <div class="widget-title">
               <span class="w-icon"><svg class="icon"><use href="#i-trophy"></use></svg></span>

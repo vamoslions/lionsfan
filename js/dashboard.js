@@ -104,15 +104,29 @@
 
   /* ---------------- 경기 일정 ---------------- */
   const dashSchedule = $("#dashSchedule");
+  const calMonths = $("#calMonths");
+  const calDetail = $("#calDetail");
+  const scheduleCalendar = $("#scheduleCalendar");
   const scheduleCount = $("#scheduleCount");
   const scheduleFade = bindFade(dashSchedule);
   let scheduleFilter = "all";
+  let scheduleView = "calendar";
 
   const schedule = Array.isArray(DATA.schedule) ? DATA.schedule : [];
+  let selectedDate = schedule.length ? schedule[schedule.length - 1].date : "";
 
   function parseGameDate(str) {
     const parts = String(str).split("-").map(Number);
     return new Date(parts[0], parts[1] - 1, parts[2]);
+  }
+
+  function filteredGames() {
+    return schedule.filter((game) => {
+      if (scheduleFilter === "home") return game.home;
+      if (scheduleFilter === "away") return !game.home;
+      if (scheduleFilter === "win") return game.result === "승";
+      return true;
+    });
   }
 
   function gameRow(game) {
@@ -127,7 +141,7 @@
     const locText = game.home ? "홈" : "원정";
 
     return `
-      <article class="dash-game ${cls}">
+      <article class="dash-game ${cls}" data-date="${escapeHTML(game.date)}">
         <div class="dg-date">
           <b>${day}</b>
           <span>${month}월 ${weekday}</span>
@@ -144,21 +158,154 @@
       </article>`;
   }
 
-  function renderSchedule() {
+  function renderScheduleList(games) {
     if (!dashSchedule) return;
-    const games = schedule.filter((game) => {
-      if (scheduleFilter === "home") return game.home;
-      if (scheduleFilter === "away") return !game.home;
-      if (scheduleFilter === "win") return game.result === "승";
-      return true;
-    });
-
     dashSchedule.innerHTML = games.length
       ? games.map(gameRow).join("")
       : '<p class="roster-empty">조건에 맞는 경기가 없습니다.</p>';
-
-    if (scheduleCount) scheduleCount.textContent = `${games.length}경기`;
     scheduleFade();
+  }
+
+  function shortOpponent(name) {
+    return String(name || "").split(" ")[0];
+  }
+
+  function calendarCell(cell, visibleDates) {
+    if (!cell) return '<span class="cal-day is-blank" aria-hidden="true"></span>';
+    const game = cell.game;
+    if (!game) {
+      return `<span class="cal-day is-empty"><span class="cal-daynum">${cell.day}</span></span>`;
+    }
+    const isWin = game.result === "승";
+    const isLoss = game.result === "패";
+    const isMuted = !visibleDates.has(game.date);
+    const isSelected = game.date === selectedDate;
+    const cls = [
+      "cal-day has-game",
+      isWin ? "is-win" : isLoss ? "is-loss" : "",
+      isMuted ? "is-muted" : "",
+      isSelected ? "is-selected" : "",
+    ].filter(Boolean).join(" ");
+    const score = String(game.score).replace(/\s*:\s*/, " : ");
+    return `
+      <button class="${cls}" type="button" data-date="${escapeHTML(game.date)}"
+        aria-label="${escapeHTML(`${cell.day}일 ${game.stage} ${game.opponent} ${game.score} ${game.result}`)}"
+        title="${escapeHTML(`${game.stage} · ${game.opponent} · ${game.score} ${game.result}`)}">
+        <span class="cal-daynum">${cell.day}</span>
+        <span class="cal-score"><b>${escapeHTML(score.replace(" : ", ":"))}</b><i>${escapeHTML(game.result)}</i></span>
+      </button>`;
+  }
+
+  function buildCalendarMonths() {
+    const map = new Map();
+    schedule.forEach((game) => {
+      const d = parseGameDate(game.date);
+      const key = `${d.getFullYear()}-${d.getMonth()}`;
+      if (!map.has(key)) map.set(key, { year: d.getFullYear(), month: d.getMonth(), games: [] });
+      map.get(key).games.push(game);
+    });
+    return Array.from(map.values()).sort((a, b) => (a.year - b.year) || (a.month - b.month));
+  }
+
+  function renderCalendar(games) {
+    if (!calMonths) return;
+    const visibleDates = new Set(games.map((game) => game.date));
+    const months = buildCalendarMonths();
+    if (!months.length) {
+      calMonths.innerHTML = '<p class="roster-empty">표시할 경기가 없습니다.</p>';
+      return;
+    }
+
+    calMonths.innerHTML = months.map(({ year, month, games: monthGames }) => {
+      const first = new Date(year, month, 1);
+      const startDay = first.getDay();
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+      const cells = [];
+      for (let i = 0; i < startDay; i += 1) cells.push(null);
+      for (let day = 1; day <= daysInMonth; day += 1) {
+        const dateStr = `${year}-${pad(month + 1)}-${pad(day)}`;
+        const game = monthGames.find((item) => item.date === dateStr);
+        cells.push({ day, dateStr, game });
+      }
+      while (cells.length % 7 !== 0) cells.push(null);
+
+      const weeks = [];
+      for (let i = 0; i < cells.length; i += 7) {
+        weeks.push(cells.slice(i, i + 7));
+      }
+
+      return `
+        <section class="cal-month" aria-label="${year}년 ${month + 1}월">
+          <div class="cal-month-head">
+            <strong>${month + 1}월</strong>
+            <span>${year}</span>
+            <em>${monthGames.length}경기</em>
+          </div>
+          <div class="cal-weekdays" aria-hidden="true">
+            <span class="sun">일</span><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span class="sat">토</span>
+          </div>
+          <div class="cal-grid">
+            ${weeks.map((week) => `<div class="cal-week">${week.map((cell) => calendarCell(cell, visibleDates)).join("")}</div>`).join("")}
+          </div>
+        </section>`;
+    }).join("");
+
+    renderCalendarDetail();
+  }
+
+  function renderCalendarDetail() {
+    if (!calDetail) return;
+    const game = schedule.find((item) => item.date === selectedDate);
+    if (!game) {
+      calDetail.innerHTML = '<p class="cal-hint">날짜를 선택하면 경기 상세가 표시됩니다.</p>';
+      return;
+    }
+    const date = parseGameDate(game.date);
+    const [samsungScore, oppScore] = String(game.score).split(":").map((part) => part.trim());
+    const isWin = game.result === "승";
+    const isLoss = game.result === "패";
+    const resultClass = isWin ? "win" : isLoss ? "loss" : "up";
+
+    calDetail.innerHTML = `
+      <div class="cal-detail-date">
+        <b>${date.getMonth() + 1}.${String(date.getDate()).padStart(2, "0")}</b>
+        <span>${DAYS[date.getDay()]}요일</span>
+      </div>
+      <div class="cal-detail-main">
+        <span class="cal-detail-stage">${escapeHTML(game.stage)} · ${game.home ? "홈" : "원정"}</span>
+        <strong>삼성 <b>${escapeHTML(samsungScore)}</b> : <b>${escapeHTML(oppScore)}</b> ${escapeHTML(shortOpponent(game.opponent))}</strong>
+        <small>${escapeHTML(game.venue)} · ${escapeHTML(game.time)}</small>
+      </div>
+      <div class="cal-detail-side">
+        <i class="cal-detail-result ${resultClass}">${escapeHTML(game.result)}</i>
+        <span>${escapeHTML(game.note || "")}</span>
+      </div>`;
+  }
+
+  function renderSchedule() {
+    const games = filteredGames();
+    if (scheduleCount) scheduleCount.textContent = `${games.length}경기`;
+    renderCalendar(games);
+    renderScheduleList(games);
+  }
+
+  function setScheduleView(view) {
+    scheduleView = view;
+    if (scheduleCalendar) scheduleCalendar.hidden = view !== "calendar";
+    if (dashSchedule) dashSchedule.hidden = view !== "list";
+    $$("[data-schedule-view]").forEach((btn) => {
+      btn.classList.toggle("active", btn.dataset.scheduleView === view);
+    });
+    if (view === "list") scheduleFade();
+  }
+
+  if (calMonths) {
+    calMonths.addEventListener("click", (event) => {
+      const day = event.target.closest("[data-date]");
+      if (!day) return;
+      selectedDate = day.dataset.date;
+      renderSchedule();
+    });
   }
 
   $$("[data-schedule-filter]").forEach((btn) => {
@@ -169,6 +316,11 @@
     });
   });
 
+  $$("[data-schedule-view]").forEach((btn) => {
+    btn.addEventListener("click", () => setScheduleView(btn.dataset.scheduleView));
+  });
+
+  setScheduleView("calendar");
   renderSchedule();
 
   /* ---------------- ICS 캘린더 내보내기 ---------------- */
@@ -234,6 +386,135 @@
   const icsBtn = $("#icsBtn");
   if (icsBtn) icsBtn.addEventListener("click", downloadIcs);
 
+  /* ---------------- FA 트래커 ---------------- */
+  function renderFA() {
+    const fa = DATA.fa;
+    if (!fa) return;
+    const headline = $("#faHeadline");
+    const summary = $("#faSummary");
+    const sub = $("#faSub");
+    const players = $("#faPlayers");
+    const dates = $("#faDates");
+    const note = $("#faNote");
+
+    if (headline) headline.textContent = fa.headline || "";
+    if (summary) summary.textContent = fa.summary || "";
+    if (sub) sub.textContent = `삼성 ${Array.isArray(fa.players) ? fa.players.length : 0}명 · 11.17 협상 개시`;
+    if (note) note.textContent = fa.note || "";
+
+    if (players && Array.isArray(fa.players)) {
+      players.innerHTML = fa.players.map((player) => `
+        <div class="fa-player">
+          <span class="fa-grade grade-${escapeHTML(String(player.grade).toLowerCase())}">${escapeHTML(player.grade)}</span>
+          <div class="fa-player-main">
+            <strong>${escapeHTML(player.name)}</strong>
+            <small>${escapeHTML(player.pos)} · ${escapeHTML(player.role)}</small>
+            <p>${escapeHTML(player.desc)}</p>
+          </div>
+          <div class="fa-player-side">
+            <b>${escapeHTML(player.stat)}</b>
+            <em>${escapeHTML(player.status)}</em>
+          </div>
+        </div>`).join("");
+    }
+
+    if (dates && Array.isArray(fa.dates)) {
+      dates.innerHTML = fa.dates.map((item) => `
+        <li class="fa-date is-${escapeHTML(item.state)}">
+          <b>${escapeHTML(item.date)}</b>
+          <span>${escapeHTML(item.label)}</span>
+          <small>${escapeHTML(item.note)}</small>
+        </li>`).join("");
+    }
+  }
+
+  renderFA();
+
+  /* ---------------- 뉴스 ---------------- */
+  function newsDate(value) {
+    const parts = String(value || "").split("-");
+    if (parts.length < 3) return value;
+    return `${Number(parts[1])}.${Number(parts[2])}`;
+  }
+
+  function renderNews() {
+    const feature = $("#newsFeature");
+    const list = $("#newsList");
+    const updated = $("#newsUpdated");
+    const news = Array.isArray(DATA.news) ? DATA.news : [];
+    if (!feature || !list || !news.length) return;
+
+    const [lead, ...rest] = news;
+    feature.innerHTML = `
+      <a class="news-feature-card" href="${escapeHTML(lead.href)}" target="_blank" rel="noopener">
+        <span class="news-tag">${escapeHTML(lead.tag)}</span>
+        <strong>${escapeHTML(lead.title)}</strong>
+        <p>${escapeHTML(lead.summary)}</p>
+        <span class="news-meta">${escapeHTML(lead.source)} · ${escapeHTML(newsDate(lead.date))}</span>
+      </a>`;
+
+    list.innerHTML = rest.map((item) => `
+      <li>
+        <a class="news-item" href="${escapeHTML(item.href)}" target="_blank" rel="noopener">
+          <span class="news-tag is-small">${escapeHTML(item.tag)}</span>
+          <span class="news-item-body">
+            <strong>${escapeHTML(item.title)}</strong>
+            <small>${escapeHTML(item.source)} · ${escapeHTML(newsDate(item.date))}</small>
+          </span>
+          <span class="news-arrow" aria-hidden="true">↗</span>
+        </a>
+      </li>`).join("");
+
+    if (updated && DATA.meta) {
+      updated.textContent = `${String(DATA.meta.lastUpdated).replace(/-/g, ".")} 기준`;
+    }
+  }
+
+  renderNews();
+
+  /* ---------------- 선수 기록 ---------------- */
+  function renderStats() {
+    const stats = DATA.stats;
+    const feature = $("#statFeature");
+    const mini = $("#statMini");
+    const note = $("#statsNote");
+    if (!stats || !feature || !mini) return;
+
+    const f = stats.featured || {};
+    feature.innerHTML = `
+      <div class="stat-feature-top">
+        <span class="stat-avatar" aria-hidden="true">${escapeHTML(f.emoji || "🦁")}</span>
+        <div class="stat-feature-name">
+          <strong>${escapeHTML(f.name || "")}</strong>
+          <small>${escapeHTML(f.role || "")}</small>
+        </div>
+        <div class="stat-ops">
+          <span>OPS</span>
+          <b>${escapeHTML(f.ops || "—")}</b>
+        </div>
+      </div>
+      <div class="stat-items">
+        ${(f.items || []).map((item) => `
+          <div class="stat-item">
+            <span>${escapeHTML(item.label)}</span>
+            <b>${escapeHTML(item.value)}</b>
+            <small>${escapeHTML(item.note || "")}</small>
+          </div>`).join("")}
+      </div>
+      <p class="stat-line">${escapeHTML(f.line || "")}</p>`;
+
+    mini.innerHTML = (stats.mini || []).map((item) => `
+      <div class="stat-mini">
+        <small>${escapeHTML(item.name)}</small>
+        <b>${escapeHTML(item.value)}</b>
+        <span>${escapeHTML(item.label)} · ${escapeHTML(item.note || "")}</span>
+      </div>`).join("");
+
+    if (note) note.textContent = stats.note || "";
+  }
+
+  renderStats();
+
   /* ---------------- 선수단 ---------------- */
   const dashRoster = $("#dashRoster");
   const rosterSearch = $("#rosterSearch");
@@ -245,15 +526,26 @@
   function playerCard(player) {
     const name = escapeHTML(player.name);
     const insta = `https://www.instagram.com/explore/search/keyword/?q=${encodeURIComponent(player.name + " 삼성 라이온즈")}`;
+    const hasPhoto = Boolean(player.photo);
+    const stat = player.stat
+      ? `<span class="dp-stat"><b>${escapeHTML(player.stat.value)}</b>${escapeHTML(player.stat.label)}</span>`
+      : "";
+
+    const portrait = hasPhoto
+      ? `<img src="${escapeHTML(player.photo)}" alt="${name} 선수 사진" loading="lazy" referrerpolicy="no-referrer" />`
+      : `<span class="dp-initial" aria-hidden="true">${escapeHTML(String(player.name).charAt(0))}</span>
+         <span class="dp-emoji-watermark" aria-hidden="true">${escapeHTML(player.emoji)}</span>`;
 
     return `
-      <a class="dash-player" href="${insta}" target="_blank" rel="noopener" aria-label="${name} 인스타그램 검색">
-        <span class="dp-emoji" aria-hidden="true">${escapeHTML(player.emoji)}</span>
+      <a class="dash-player ${hasPhoto ? "has-photo" : "no-photo"}" href="${insta}" target="_blank" rel="noopener" aria-label="${name} 인스타그램 검색">
+        <span class="dp-photo">
+          ${portrait}
+          <span class="dp-photo-tag">${escapeHTML(player.tag)}</span>
+        </span>
         <span class="dp-body">
-          <strong>${name}</strong>
+          <span class="dp-name-row"><strong>${name}</strong>${stat}</span>
           <small>${escapeHTML(player.role)}</small>
         </span>
-        <span class="dp-tag">${escapeHTML(player.tag)}</span>
       </a>`;
   }
 
@@ -283,37 +575,75 @@
   if (rosterSearch) rosterSearch.addEventListener("input", renderRoster);
   renderRoster();
 
-  /* ---------------- 팬 보드 ---------------- */
-  const CHEER_KEY = "vamos-lions-cheers-v1";
+  /* 사진 출처 */
+  const photoCredits = $("#photoCredits");
+  if (photoCredits && Array.isArray(DATA.photoCredits)) {
+    photoCredits.innerHTML = DATA.photoCredits.map((credit) => `
+      <li>
+        <a href="${escapeHTML(credit.href)}" target="_blank" rel="noopener">${escapeHTML(credit.name)}</a>
+        <span>${escapeHTML(credit.author)} · ${escapeHTML(credit.license)}</span>
+      </li>`).join("");
+  }
+
+  /* ---------------- 팬 보드 (GitHub Issues 공유) ---------------- */
+  const BOARD_REPO = "vamoslions/lionsfan";
+  const BOARD_API = `https://api.github.com/repos/${BOARD_REPO}/issues?state=open&per_page=50&sort=created&direction=desc`;
+  const BOARD_CACHE_KEY = "vamos-lions-board-cache-v2";
+  const BOARD_PREFIX = "[팬보드]";
+  const isBoardDemo = new URLSearchParams(window.location.search).get("board") === "demo";
+
   const cheerForm = $("#cheerForm");
   const cheerName = $("#cheerName");
   const cheerMsg = $("#cheerMsg");
   const cheerList = $("#cheerList");
   const boardTotal = $("#boardTotal");
+  const boardStatus = $("#boardStatus");
+  const boardRefresh = $("#boardRefresh");
   const cheerFade = bindFade(cheerList);
 
-  const seedCheers = [
-    { id: "seed-1", name: "라팍3루", message: "12년 기다렸다. 이제 왕조 다시 시작! 🦁💙", at: "2026-11-09T10:24:00+09:00" },
-    { id: "seed-2", name: "구자욱팬", message: "주장님 한국시리즈 MVP 축하드려요. 내년에도 함께 갑니다!", at: "2026-11-09T12:02:00+09:00" },
-    { id: "seed-3", name: "대구아재", message: "라팍 첫 우승의 순간을 직관할 수 있어서 행복했습니다.", at: "2026-11-10T08:41:00+09:00" },
+  let boardPosts = [];
+  let boardLoaded = false;
+
+  const demoPosts = [
+    { number: 3, title: "[팬보드] 라팍3루", body: "12년 기다렸다. 이제 왕조 다시 시작! 🦁💙", created_at: "2026-11-09T10:24:00+09:00", html_url: "https://github.com/vamoslions/lionsfan/issues" },
+    { number: 2, title: "[팬보드] 구자욱팬", body: "주장님 한국시리즈 MVP 축하드려요. 내년에도 함께 갑니다!", created_at: "2026-11-09T12:02:00+09:00", html_url: "https://github.com/vamoslions/lionsfan/issues" },
+    { number: 1, title: "[팬보드] 대구아재", body: "라팍 첫 우승의 순간을 직관할 수 있어서 행복했습니다.", created_at: "2026-11-10T08:41:00+09:00", html_url: "https://github.com/vamoslions/lionsfan/issues" },
   ];
 
-  function loadCheers() {
+  function isFanBoardIssue(issue) {
+    if (!issue || issue.pull_request) return false;
+    const labels = (issue.labels || []).map((label) => (typeof label === "string" ? label : label.name));
+    return labels.includes("fanboard") || String(issue.title || "").startsWith(BOARD_PREFIX);
+  }
+
+  function toPost(issue) {
+    const rawTitle = String(issue.title || "").replace(/^\s*\[팬보드\]\s*/, "").trim();
+    const rawBody = String(issue.body || "").split(/\n\s*---\s*\n/)[0].trim();
+    return {
+      id: String(issue.number || issue.id || Math.random()),
+      name: rawTitle || "팬",
+      message: rawBody || "(내용 없음)",
+      at: issue.created_at || new Date().toISOString(),
+      href: issue.html_url || "",
+    };
+  }
+
+  function loadBoardCache() {
     try {
-      const raw = localStorage.getItem(CHEER_KEY);
-      if (raw) {
-        const parsed = JSON.parse(raw);
-        if (Array.isArray(parsed)) return parsed;
-      }
+      const raw = localStorage.getItem(BOARD_CACHE_KEY);
+      if (!raw) return [];
+      const parsed = JSON.parse(raw);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  function saveBoardCache(posts) {
+    try {
+      localStorage.setItem(BOARD_CACHE_KEY, JSON.stringify(posts.slice(0, 30)));
     } catch (e) { /* ignore */ }
-    return seedCheers.slice();
   }
-
-  function saveCheers(list) {
-    try { localStorage.setItem(CHEER_KEY, JSON.stringify(list)); } catch (e) { /* ignore */ }
-  }
-
-  let cheers = loadCheers();
 
   function timeAgo(iso) {
     const then = new Date(iso).getTime();
@@ -328,57 +658,105 @@
     return `${d.getMonth() + 1}.${d.getDate()}`;
   }
 
-  function renderCheers() {
+  function renderBoard() {
     if (!cheerList) return;
-    if (boardTotal) boardTotal.textContent = `${cheers.length}개`;
+    if (boardTotal) boardTotal.textContent = `${boardPosts.length}개`;
 
-    if (!cheers.length) {
-      cheerList.innerHTML = '<li class="cheer-empty">첫 번째 응원을 남겨보세요! 🦁</li>';
+    if (!boardPosts.length) {
+      cheerList.innerHTML = '<li class="cheer-empty">아직 공유된 응원이 없어요.<br />첫 글을 남겨보세요! 🦁</li>';
       cheerFade();
       return;
     }
 
     cheerList.innerHTML = "";
-    cheers.slice().sort((a, b) => new Date(b.at) - new Date(a.at)).forEach((cheer) => {
-      const li = document.createElement("li");
-      li.className = "cheer-line";
+    boardPosts
+      .slice()
+      .sort((a, b) => new Date(b.at) - new Date(a.at))
+      .slice(0, 30)
+      .forEach((post) => {
+        const li = document.createElement("li");
+        li.className = "cheer-line";
 
-      const avatar = document.createElement("span");
-      avatar.className = "cheer-line-avatar";
-      avatar.setAttribute("aria-hidden", "true");
-      avatar.textContent = (cheer.name || "?").trim().charAt(0);
+        const avatar = document.createElement("span");
+        avatar.className = "cheer-line-avatar";
+        avatar.setAttribute("aria-hidden", "true");
+        avatar.textContent = (post.name || "?").trim().charAt(0);
 
-      const body = document.createElement("div");
-      body.className = "cheer-line-body";
+        const body = document.createElement("div");
+        body.className = "cheer-line-body";
 
-      const top = document.createElement("div");
-      top.className = "cheer-line-top";
-      const nameEl = document.createElement("strong");
-      nameEl.textContent = cheer.name;
-      const timeEl = document.createElement("span");
-      timeEl.textContent = timeAgo(cheer.at);
-      top.append(nameEl, timeEl);
+        const top = document.createElement("div");
+        top.className = "cheer-line-top";
+        const nameEl = document.createElement("strong");
+        nameEl.textContent = post.name;
+        const timeEl = document.createElement("span");
+        timeEl.textContent = timeAgo(post.at);
+        top.append(nameEl, timeEl);
 
-      const msg = document.createElement("p");
-      msg.textContent = cheer.message;
+        const msg = document.createElement("p");
+        msg.textContent = post.message;
 
-      body.append(top, msg);
+        body.append(top, msg);
 
-      const del = document.createElement("button");
-      del.className = "cheer-line-del";
-      del.type = "button";
-      del.setAttribute("aria-label", `${cheer.name}의 응원 삭제`);
-      del.textContent = "✕";
-      del.addEventListener("click", () => {
-        cheers = cheers.filter((item) => item.id !== cheer.id);
-        saveCheers(cheers);
-        renderCheers();
+        if (post.href) {
+          const link = document.createElement("a");
+          link.className = "cheer-line-link";
+          link.href = post.href;
+          link.target = "_blank";
+          link.rel = "noopener";
+          link.setAttribute("aria-label", `${post.name}의 GitHub 글 열기`);
+          link.textContent = "↗";
+          li.append(avatar, body, link);
+        } else {
+          li.append(avatar, body);
+        }
+
+        cheerList.appendChild(li);
       });
-
-      li.append(avatar, body, del);
-      cheerList.appendChild(li);
-    });
     cheerFade();
+  }
+
+  async function fetchBoard() {
+    if (!cheerList) return;
+    if (boardRefresh) boardRefresh.classList.add("is-loading");
+    if (boardStatus) boardStatus.textContent = "공유 보드를 불러오는 중…";
+    try {
+      let issues;
+      if (isBoardDemo) {
+        issues = demoPosts;
+      } else {
+        const response = await fetch(BOARD_API, {
+          headers: { Accept: "application/vnd.github+json" },
+        });
+        if (!response.ok) throw new Error(`GitHub API ${response.status}`);
+        issues = await response.json();
+      }
+      boardPosts = (Array.isArray(issues) ? issues : [])
+        .filter(isFanBoardIssue)
+        .map(toPost)
+        .slice(0, 30);
+      boardLoaded = true;
+      saveBoardCache(boardPosts);
+      renderBoard();
+      if (boardStatus) {
+        boardStatus.textContent = boardPosts.length
+          ? `공유 보드 ${boardPosts.length}개 · 방금 업데이트`
+          : "GitHub 로그인 후 첫 글을 남겨보세요.";
+      }
+    } catch (error) {
+      const cached = loadBoardCache();
+      if (cached.length) {
+        boardPosts = cached;
+        renderBoard();
+        if (boardStatus) boardStatus.textContent = "최신 글을 불러오지 못해 저장된 목록을 보여줍니다.";
+      } else {
+        boardPosts = [];
+        renderBoard();
+        if (boardStatus) boardStatus.textContent = "공유 보드를 불러오지 못했어요. GitHub에서 직접 확인해 주세요.";
+      }
+    } finally {
+      if (boardRefresh) boardRefresh.classList.remove("is-loading");
+    }
   }
 
   if (cheerForm) {
@@ -388,20 +766,24 @@
       const message = cheerMsg ? cheerMsg.value.trim() : "";
       if (!name || !message) return;
 
-      cheers.push({
-        id: "c-" + Date.now() + "-" + Math.random().toString(36).slice(2, 7),
-        name: name.slice(0, 12),
-        message: message.slice(0, 80),
-        at: new Date().toISOString(),
-      });
-      saveCheers(cheers);
-      renderCheers();
-      cheerForm.reset();
-      if (cheerName) cheerName.focus();
+      const title = `${BOARD_PREFIX} ${name.slice(0, 12)}`;
+      const body = `${message.slice(0, 80)}\n\n---\nVAMOS LIONS 팬보드에서 보냄`;
+      const url = `https://github.com/${BOARD_REPO}/issues/new?labels=fanboard&title=${encodeURIComponent(title)}&body=${encodeURIComponent(body)}`;
+      window.open(url, "_blank", "noopener");
+      if (boardStatus) {
+        boardStatus.textContent = "GitHub 창에서 'Submit new issue'를 누르면 공유 보드에 게시됩니다. 등록 후 새로고침을 눌러주세요.";
+      }
     });
   }
 
-  renderCheers();
+  if (boardRefresh) boardRefresh.addEventListener("click", fetchBoard);
+
+  const cachedBoard = loadBoardCache();
+  if (cachedBoard.length) {
+    boardPosts = cachedBoard;
+    renderBoard();
+  }
+  fetchBoard();
 
   /* ---------------- 라이온즈TV 빠른 링크 ---------------- */
   const tvQuick = $("#tvQuick");
