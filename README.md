@@ -120,12 +120,12 @@ samsung-lions-fan/
 정적 사이트이므로 `main` 브랜치를 그대로 올리고 GitHub Pages를 켜면 됩니다.
 `index.html`이 루트에 있어 별도 빌드 설정이 필요 없습니다.
 
-- 저장소: <https://github.com/vamoslions/samsung-lions-fan>
-- 사이트: <https://vamoslions.github.io/samsung-lions-fan/>
+- 저장소: <https://github.com/vamoslions/lionsfan>
+- 사이트: <https://vamoslions.github.io/lionsfan/>
 
 ```bash
 # 최초 1회: 저장소를 만든 뒤
-git remote add origin https://github.com/vamoslions/samsung-lions-fan.git
+git remote add origin https://github.com/vamoslions/lionsfan.git
 git push -u origin main
 ```
 
