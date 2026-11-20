@@ -553,7 +553,10 @@
     if (!dashRoster) return;
     const keyword = rosterSearch ? rosterSearch.value.trim().toLowerCase() : "";
     const players = roster.filter((player) => {
-      const matchesGroup = rosterFilter === "전체" || player.group === rosterFilter;
+      let matchesGroup;
+      if (rosterFilter === "퓨처스") matchesGroup = player.squad === "futures";
+      else if (rosterFilter === "전체") matchesGroup = player.squad !== "futures";
+      else matchesGroup = player.squad !== "futures" && player.group === rosterFilter;
       const haystack = [player.name, player.role, player.tag, player.desc].join(" ").toLowerCase();
       return matchesGroup && (!keyword || haystack.includes(keyword));
     });
@@ -584,6 +587,264 @@
         <span>${escapeHTML(credit.author)} · ${escapeHTML(credit.license)}</span>
       </li>`).join("");
   }
+
+  /* ---------------- 나만의 스쿼드 ---------------- */
+  const SQUAD_KEY = "vamos-lions-squad-v1";
+  const squadLineup = $("#squadLineup");
+  const squadPool = $("#squadPool");
+  const squadPitcher = $("#squadPitcher");
+  const squadPitcherName = $("#squadPitcherName");
+  const squadCount = $("#squadCount");
+  const squadStatus = $("#squadStatus");
+  const squadReset = $("#squadReset");
+  const squadCopy = $("#squadCopy");
+
+  const squadState = { pitcher: null, batters: Array(9).fill(null) };
+  let squadActive = 0;
+  let squadFilter = "전체";
+
+  function squadPlayer(name) {
+    return name ? roster.find((player) => player.name === name) || null : null;
+  }
+
+  function loadSquad() {
+    try {
+      const raw = localStorage.getItem(SQUAD_KEY);
+      if (!raw) return;
+      const saved = JSON.parse(raw);
+      if (!saved || typeof saved !== "object") return;
+      if (typeof saved.pitcher === "string" && squadPlayer(saved.pitcher)) {
+        squadState.pitcher = saved.pitcher;
+      }
+      if (Array.isArray(saved.batters)) {
+        saved.batters.slice(0, 9).forEach((name, index) => {
+          if (typeof name === "string" && squadPlayer(name)) squadState.batters[index] = name;
+        });
+      }
+    } catch (e) { /* ignore */ }
+  }
+
+  function saveSquad() {
+    try {
+      localStorage.setItem(SQUAD_KEY, JSON.stringify(squadState));
+    } catch (e) { /* ignore */ }
+  }
+
+  function squadFilled() {
+    return squadState.batters.filter(Boolean).length + (squadState.pitcher ? 1 : 0);
+  }
+
+  function firstEmptyBat() {
+    return squadState.batters.findIndex((name) => !name);
+  }
+
+  function setSquadStatus(text) {
+    if (squadStatus) squadStatus.textContent = text;
+  }
+
+  function renderSquad() {
+    if (!squadLineup) return;
+
+    squadLineup.innerHTML = squadState.batters.map((name, index) => {
+      const player = squadPlayer(name);
+      const isActive = squadActive === index;
+      return `
+        <li>
+          <button class="sq-slot ${player ? "is-filled" : ""} ${isActive ? "is-active" : ""}" data-slot="${index}" type="button">
+            <span class="sq-no">${index + 1}</span>
+            <span class="sq-main">
+              <b>${player ? escapeHTML(player.name) : "선수 선택"}</b>
+              <small>${player ? escapeHTML(player.group) : `${index + 1}번 타자`}</small>
+            </span>
+            ${player ? `<span class="sq-x" data-clear="${index}" role="button" tabindex="0" aria-label="${escapeHTML(player.name)} 빼기">×</span>` : ""}
+          </button>
+        </li>`;
+    }).join("");
+
+    if (squadPitcherName) {
+      squadPitcherName.textContent = squadState.pitcher ? squadState.pitcher : "선수 선택";
+    }
+    if (squadPitcher) {
+      squadPitcher.classList.toggle("is-filled", Boolean(squadState.pitcher));
+      squadPitcher.classList.toggle("is-active", squadActive === "pitcher");
+    }
+    if (squadCount) squadCount.textContent = `${squadFilled()} / 10`;
+
+    if (squadPool) {
+      const pool = roster.filter((player) => {
+        if (squadFilter === "퓨처스") return player.squad === "futures";
+        if (squadFilter === "전체") return true;
+        return player.group === squadFilter;
+      });
+      const picked = new Set([squadState.pitcher, ...squadState.batters].filter(Boolean));
+      squadPool.innerHTML = pool.length ? pool.map((player) => {
+        const isPicked = picked.has(player.name);
+        const stat = player.stat ? `${player.stat.label} ${player.stat.value}` : player.tag;
+        return `
+          <button class="sq-chip ${isPicked ? "is-picked" : ""}" data-name="${escapeHTML(player.name)}" type="button" aria-pressed="${isPicked}">
+            <span class="sq-chip-top"><b>${escapeHTML(player.name)}</b><em>${escapeHTML(player.group)}</em></span>
+            <small>${escapeHTML(stat)}</small>
+          </button>`;
+      }).join("") : '<p class="roster-empty">해당하는 선수가 없습니다.</p>';
+    }
+  }
+
+  function squadNextSlot() {
+    const empty = firstEmptyBat();
+    squadActive = empty === -1 ? null : empty;
+  }
+
+  function placeSquadPlayer(player) {
+    const isPitcher = player.group === "투수";
+    if (isPitcher && typeof squadActive === "number") {
+      setSquadStatus("투수는 ‘선발 투수’ 슬롯에만 넣을 수 있어요.");
+      return;
+    }
+    if (!isPitcher && squadActive === "pitcher") {
+      setSquadStatus("선발 투수에는 투수만 넣을 수 있어요. 타자는 타순 슬롯을 선택하세요.");
+      return;
+    }
+
+    if (isPitcher) {
+      squadState.pitcher = player.name;
+      squadActive = firstEmptyBat();
+      if (squadActive === -1) squadActive = null;
+      setSquadStatus(`${player.name} 선수를 선발 투수로 넣었습니다.`);
+    } else {
+      if (typeof squadActive !== "number") {
+        setSquadStatus("먼저 타순 슬롯을 선택하세요.");
+        return;
+      }
+      squadState.batters[squadActive] = player.name;
+      const justFilled = squadActive;
+      squadNextSlot();
+      setSquadStatus(`${player.name} 선수를 ${justFilled + 1}번 타순에 넣었습니다.`);
+    }
+    saveSquad();
+    renderSquad();
+  }
+
+  function removeSquadPlayer(name) {
+    if (squadState.pitcher === name) squadState.pitcher = null;
+    squadState.batters = squadState.batters.map((value) => (value === name ? null : value));
+    saveSquad();
+    renderSquad();
+  }
+
+  function toggleSquadPlayer(player) {
+    const picked = squadState.pitcher === player.name || squadState.batters.includes(player.name);
+    if (picked) {
+      removeSquadPlayer(player.name);
+      setSquadStatus(`${player.name} 선수를 뺐습니다.`);
+    } else {
+      placeSquadPlayer(player);
+    }
+  }
+
+  if (squadPitcher) {
+    squadPitcher.addEventListener("click", () => {
+      squadActive = "pitcher";
+      renderSquad();
+      setSquadStatus("선발 투수 슬롯을 선택했습니다. 아래에서 투수를 골라주세요.");
+    });
+  }
+
+  if (squadLineup) {
+    squadLineup.addEventListener("click", (event) => {
+      const clear = event.target.closest("[data-clear]");
+      if (clear) {
+        event.stopPropagation();
+        const index = Number(clear.dataset.clear);
+        squadState.batters[index] = null;
+        saveSquad();
+        renderSquad();
+        setSquadStatus("타순에서 선수를 뺐습니다.");
+        return;
+      }
+      const slot = event.target.closest("[data-slot]");
+      if (!slot) return;
+      squadActive = Number(slot.dataset.slot);
+      renderSquad();
+      setSquadStatus(`${squadActive + 1}번 타순을 선택했습니다. 아래에서 타자를 골라주세요.`);
+    });
+    squadLineup.addEventListener("keydown", (event) => {
+      if (event.key !== "Enter" && event.key !== " ") return;
+      const clear = event.target.closest("[data-clear]");
+      if (!clear) return;
+      event.preventDefault();
+      const index = Number(clear.dataset.clear);
+      squadState.batters[index] = null;
+      saveSquad();
+      renderSquad();
+      setSquadStatus("타순에서 선수를 뺐습니다.");
+    });
+  }
+
+  if (squadPool) {
+    squadPool.addEventListener("click", (event) => {
+      const chip = event.target.closest("[data-name]");
+      if (!chip) return;
+      const player = squadPlayer(chip.dataset.name);
+      if (player) toggleSquadPlayer(player);
+    });
+  }
+
+  $$("[data-squad-filter]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      squadFilter = btn.dataset.squadFilter;
+      $$("[data-squad-filter]").forEach((b) => b.classList.toggle("active", b === btn));
+      renderSquad();
+    });
+  });
+
+  if (squadReset) {
+    squadReset.addEventListener("click", () => {
+      squadState.pitcher = null;
+      squadState.batters = Array(9).fill(null);
+      squadActive = 0;
+      saveSquad();
+      renderSquad();
+      setSquadStatus("스쿼드를 초기화했습니다. 다시 만들어보세요!");
+    });
+  }
+
+  if (squadCopy) {
+    squadCopy.addEventListener("click", async () => {
+      if (squadFilled() === 0) {
+        setSquadStatus("아직 선택한 선수가 없습니다.");
+        return;
+      }
+      const lines = [
+        "🦁 나만의 삼성 라이온즈 스쿼드",
+        `선발: ${squadState.pitcher || "미정"}`,
+        ...squadState.batters.map((name, index) => `${index + 1}번: ${name || "미정"}`),
+        "",
+        "VAMOS LIONS · vamoslions.github.io/lionsfan",
+      ];
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          await navigator.clipboard.writeText(lines.join("\n"));
+        } else {
+          const textarea = document.createElement("textarea");
+          textarea.value = lines.join("\n");
+          textarea.style.position = "fixed";
+          textarea.style.opacity = "0";
+          document.body.appendChild(textarea);
+          textarea.select();
+          document.execCommand("copy");
+          textarea.remove();
+        }
+        setSquadStatus("라인업을 복사했습니다. 친구에게 붙여넣어 보세요!");
+      } catch (e) {
+        setSquadStatus("복사에 실패했습니다. 브라우저 권한을 확인해 주세요.");
+      }
+    });
+  }
+
+  loadSquad();
+  const squadStart = firstEmptyBat();
+  squadActive = squadStart === -1 ? null : squadStart;
+  renderSquad();
 
   /* ---------------- 팬 보드 (GitHub Issues 공유) ---------------- */
   const BOARD_REPO = "vamoslions/lionsfan";

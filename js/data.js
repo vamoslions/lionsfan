@@ -196,6 +196,48 @@ window.LIONS_DATA = {
       desc: "경험으로 후배들을 이끄는 외야 베테랑.", emoji: "🎖️",
       photo: "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/30/%EA%B9%80%ED%97%8C%EA%B3%A4_%EC%84%A0%EC%88%98.jpg/960px-%EA%B9%80%ED%97%8C%EA%B3%A4_%EC%84%A0%EC%88%98.jpg",
     },
+
+    /* 2026 퓨처스리그 주요 유망주 (공식 로스터 + 퓨처스 기록 기준) */
+    {
+      name: "이창용", group: "내야수", role: "퓨처스 내야수", squad: "futures", tag: "퓨처스 OPS .901",
+      desc: "82경기 타율 .329 · 12홈런 · 61타점. 차세대 내야 핵심.", emoji: "🔥",
+      stat: { label: "OPS", value: ".901" },
+    },
+    {
+      name: "이한민", group: "내야수", role: "퓨처스 내야수", squad: "futures", tag: "퓨처스 96경기",
+      desc: "팀 내 최다 96경기 출장. 타율 .325 · OPS .883의 꾸준함.", emoji: "🧱",
+      stat: { label: "OPS", value: ".883" },
+    },
+    {
+      name: "김태훈", group: "외야수", role: "퓨처스 외야수", squad: "futures", tag: "퓨처스 타율 .347",
+      desc: "46경기 타율 .347 · OPS .897. 강한 타격이 무기.", emoji: "🏏",
+      stat: { label: "OPS", value: ".897" },
+    },
+    {
+      name: "윤정빈", group: "외야수", role: "퓨처스 외야수", squad: "futures", tag: "퓨처스 OPS .911",
+      desc: "27경기 타율 .311 · OPS .911. 적은 기회에 강한 인상.", emoji: "⚡",
+      stat: { label: "OPS", value: ".911" },
+    },
+    {
+      name: "김재혁", group: "외야수", role: "퓨처스 외야수", squad: "futures", tag: "6홈런 · 8도루",
+      desc: "64경기 6홈런 8도루. 장타와 주루를 겸비한 외야 자원.", emoji: "🏃",
+      stat: { label: "OPS", value: ".742" },
+    },
+    {
+      name: "김현준", group: "외야수", role: "퓨처스 외야수", squad: "futures", tag: "ABL 파견",
+      desc: "2026 퓨처스 OPS .807. 비시즌 호주리그에서 경험을 쌓는다.", emoji: "🌏",
+      stat: { label: "OPS", value: ".807" },
+    },
+    {
+      name: "김백산", group: "투수", role: "퓨처스 투수", squad: "futures", tag: "육성선수 → 1군",
+      desc: "퓨처스에서 두각을 드러내 1군 선발 기회를 잡은 육성선수 출신.", emoji: "🌱",
+      stat: { label: "ABL", value: "파견" },
+    },
+    {
+      name: "김서준", group: "투수", role: "퓨처스 투수", squad: "futures", tag: "요미우리 캠프",
+      desc: "2026 마무리 캠프에서 요미우리 2군과 함께 훈련한 영건.", emoji: "✈️",
+      stat: { label: "캠프", value: "日" },
+    },
   ],
 
   /* 선수 사진 출처 (Wikimedia Commons 무료 라이선스) */

@@ -85,9 +85,10 @@
       <a href="#schedule"><svg class="icon"><use href="#i-calendar"></use></svg><span>경기 일정</span><small>03</small></a>
       <a href="#stats"><svg class="icon"><use href="#i-chart"></use></svg><span>선수 기록</span><small>04</small></a>
       <a href="#roster"><svg class="icon"><use href="#i-users"></use></svg><span>선수단</span><small>05</small></a>
-      <a href="#tv"><svg class="icon"><use href="#i-play"></use></svg><span>라이온즈TV</span><small>06</small></a>
-      <a href="#sns"><svg class="icon"><use href="#i-share"></use></svg><span>SNS · 링크</span><small>07</small></a>
-      <a href="#fanzone"><svg class="icon"><use href="#i-heart"></use></svg><span>팬 보드</span><small>08</small></a>
+      <a href="#squad"><svg class="icon"><use href="#i-star"></use></svg><span>나만의 스쿼드</span><small>06</small></a>
+      <a href="#tv"><svg class="icon"><use href="#i-play"></use></svg><span>라이온즈TV</span><small>07</small></a>
+      <a href="#sns"><svg class="icon"><use href="#i-share"></use></svg><span>SNS · 링크</span><small>08</small></a>
+      <a href="#fanzone"><svg class="icon"><use href="#i-heart"></use></svg><span>팬 보드</span><small>09</small></a>
     </nav>
 
     <div class="side-v10">
@@ -347,9 +348,9 @@
           <div class="widget-head">
             <div class="widget-title">
               <span class="w-icon"><svg class="icon"><use href="#i-users"></use></svg></span>
-              <div><h2>선수단</h2><p>2026 우승 멤버 · 주요 18명</p></div>
+              <div><h2>선수단</h2><p>1군 18명 + 퓨처스 유망주 8명</p></div>
             </div>
-            <a class="w-link" href="magazine.html#roster">전체 프로필 ↗</a>
+            <a class="w-link" href="#squad">나만의 스쿼드 ↓</a>
           </div>
           <div class="roster-controls">
             <div class="mini-tabs" id="rosterTabs" role="group" aria-label="포지션 필터">
@@ -358,6 +359,7 @@
               <button class="mini-tab" data-roster-filter="포수" type="button">포수</button>
               <button class="mini-tab" data-roster-filter="내야수" type="button">내야수</button>
               <button class="mini-tab" data-roster-filter="외야수" type="button">외야수</button>
+              <button class="mini-tab" data-roster-filter="퓨처스" type="button">퓨처스</button>
             </div>
             <label class="mini-search">
               <svg class="icon"><use href="#i-search"></use></svg>
@@ -365,11 +367,53 @@
             </label>
           </div>
           <div class="dash-roster-grid" id="dashRoster"></div>
-          <p class="widget-note">사진이 있는 선수는 Wikimedia Commons 무료 라이선스 이미지, 나머지는 스타일 카드로 표시합니다. 카드를 누르면 Instagram 검색으로 이동해요.</p>
+          <p class="widget-note">1군은 2026 우승 멤버, <strong>퓨처스</strong> 탭은 2026 퓨처스리그 주요 유망주입니다. 사진이 있는 선수는 Wikimedia Commons 무료 라이선스 이미지, 나머지는 스타일 카드로 표시합니다.</p>
           <details class="photo-credits">
             <summary>사진 출처 · 라이선스</summary>
             <ul id="photoCredits"></ul>
           </details>
+        </article>
+
+        <!-- MY SQUAD -->
+        <article class="widget squad-widget span-12 reveal" id="squad">
+          <div class="widget-head">
+            <div class="widget-title">
+              <span class="w-icon w-icon-gold"><svg class="icon"><use href="#i-users"></use></svg></span>
+              <div><h2>나만의 스쿼드</h2><p>선발 1명 + 타자 9명 · 클릭으로 라인업 완성</p></div>
+            </div>
+            <div class="squad-head-actions">
+              <span class="mini-badge badge-gold" id="squadCount">0 / 10</span>
+              <button class="view-btn" id="squadReset" type="button">초기화</button>
+            </div>
+          </div>
+          <div class="squad-layout">
+            <div class="squad-field">
+              <button class="squad-pitcher" id="squadPitcher" type="button">
+                <span class="sq-pitcher-label">선발 투수</span>
+                <b id="squadPitcherName">선수 선택</b>
+                <span class="sq-pitcher-mark" aria-hidden="true">⚾</span>
+              </button>
+              <ol class="squad-lineup" id="squadLineup"></ol>
+            </div>
+            <div class="squad-pool-wrap">
+              <div class="squad-pool-head">
+                <div class="mini-tabs" id="squadPoolTabs" role="group" aria-label="스쿼드 선수 필터">
+                  <button class="mini-tab active" data-squad-filter="전체" type="button">전체</button>
+                  <button class="mini-tab" data-squad-filter="투수" type="button">투수</button>
+                  <button class="mini-tab" data-squad-filter="포수" type="button">포수</button>
+                  <button class="mini-tab" data-squad-filter="내야수" type="button">내야수</button>
+                  <button class="mini-tab" data-squad-filter="외야수" type="button">외야수</button>
+                  <button class="mini-tab" data-squad-filter="퓨처스" type="button">퓨처스</button>
+                </div>
+                <span class="squad-pool-note">선택된 선수를 다시 누르면 빠집니다</span>
+              </div>
+              <div class="squad-pool" id="squadPool"></div>
+              <div class="squad-foot">
+                <p id="squadStatus" role="status">슬롯을 누른 뒤 선수를 선택하세요. 자동 저장됩니다.</p>
+                <button class="foot-link" id="squadCopy" type="button">라인업 복사</button>
+              </div>
+            </div>
+          </div>
         </article>
 
         <!-- FAN BOARD -->
