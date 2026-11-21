@@ -111,7 +111,7 @@ ul { padding: 0; list-style: none; }
   border-radius: 10px;
   font-weight: 800;
 }
-.skip-link:focus { top: 12px; }
+.skip-link:focus-visible { top: 12px; }
 
 :focus-visible {
   outline: 2px solid var(--gold);
@@ -751,6 +751,24 @@ body.light .stage { color: var(--blue); }
 }
 .roster-card h3 { font-size: 19px; letter-spacing: -0.02em; font-weight: 900; }
 .roster-role { font-size: 11.5px; color: var(--muted-2); margin-top: 1px; }
+.roster-positions {
+  display: inline-block;
+  margin: 4px 4px 0 0;
+  padding: 2px 6px;
+  border: 1px solid color-mix(in srgb, var(--gold) 34%, transparent);
+  border-radius: 4px;
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: var(--gold);
+}
+.mini-link.is-disabled {
+  color: var(--muted-2);
+  border-color: var(--line);
+  opacity: 0.6;
+  cursor: not-allowed;
+  text-decoration: none;
+}
 .roster-tag {
   display: inline-block;
   margin-top: 11px;

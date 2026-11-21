@@ -1,0 +1,66 @@
+name: Refresh data and deploy Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      kind:
+        description: Data to refresh
+        type: choice
+        options: [all, news, fa]
+        default: all
+  schedule:
+    # Yonhap RSS declares hourly updates: avoid unnecessary 30-minute requests.
+    - cron: '17 * * * *'
+    # UTC 00:47 / 12:47 = KST 09:47 / 21:47.
+    - cron: '47 0,12 * * *'
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages-data
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -r scripts/requirements.txt
+      - name: Restore newer last-good data from deployed site
+        run: python scripts/restore_data.py
+      - name: Collect metadata
+        env:
+          SCHEDULE: ${{ github.event.schedule }}
+          REQUESTED_KIND: ${{ inputs.kind }}
+        run: |
+          KIND="${REQUESTED_KIND:-all}"
+          if [ "$SCHEDULE" = "17 * * * *" ]; then KIND=news; fi
+          if [ "$SCHEDULE" = "47 0,12 * * *" ]; then KIND=fa; fi
+          python scripts/update_data.py --kind "$KIND"
+      - name: Unit tests
+        run: python -m unittest discover -s tests -p 'test_*.py'
+      - name: Package public files only
+        run: |
+          mkdir _site
+          cp index.html magazine.html _site/
+          cp -R css js assets data _site/
+          touch _site/.nojekyll
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+      - name: Deploy Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

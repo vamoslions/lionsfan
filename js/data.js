@@ -7,10 +7,13 @@
 window.LIONS_DATA = {
   meta: {
     lastUpdated: "2026-11-15",
+    instagramCheckedAt: "2026-11-20",
+    photoCheckedAt: "2026-11-20",
     season: "2026",
     // 2027 개막 예상일 (공식 일정 발표 전까지는 '예상'으로 표시됩니다)
     nextSeasonOpener: "2027-03-27T14:00:00+09:00",
     homeVenue: "대구 삼성 라이온즈파크",
+    dataPolicy: "확인된 기록만 표시하고, 확인되지 않은 값은 비워 둡니다. 시뮬레이션의 대체값은 화면에 별도로 표시합니다.",
   },
 
   heroStats: [
@@ -130,35 +133,37 @@ window.LIONS_DATA = {
       name: "구자욱", group: "외야수", role: "주장 · 외야수", tag: "2026 KS MVP",
       desc: "타율 .371로 리그 1위. 한국시리즈 20타수 10안타 1홈런 6타점.", emoji: "🦁",
       stat: { label: "OPS", value: "1.039" },
-      photo: "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/74/2017_09_01_%EC%82%BC%EC%84%B1_vs_SK_%EA%B5%BF%EB%B0%94%EC%9D%B4_%EB%9D%BC%EC%9D%B4%EC%98%A8%ED%82%B9_1_%284%29.jpg/960px-2017_09_01_%EC%82%BC%EC%84%B1_vs_SK_%EA%B5%BF%EB%B0%94%EC%9D%B4_%EB%9D%BC%EC%9D%B4%EC%98%A8%ED%82%B9_1_%284%29.jpg",
+      photo: "assets/players/koo.jpg",
     },
     {
       name: "강민호", group: "포수", role: "포수", tag: "2,600경기 출장",
       desc: "KBO 역대 최초 2,600경기 출장. 데뷔 23년 만에 첫 우승 반지.", emoji: "🧤",
       stat: { label: "경기", value: "2,600" },
-      photo: "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/48/Kang_Min-ho_2023.jpg/960px-Kang_Min-ho_2023.jpg",
+      photo: "assets/players/kang.jpg",
     },
     {
       name: "최형우", group: "외야수", role: "지명타자 · 외야수", tag: "최고령 KS 우승",
       desc: "43세, KBO 한국시리즈 최고령 우승 선수. 왕조의 마지막 대장군.", emoji: "👑",
       stat: { label: "KS 타율", value: ".357" },
+      photo: "assets/players/choi.jpg",
     },
     {
       name: "원태인", group: "투수", role: "투수", tag: "KS 5차전 MVP",
       desc: "포스트시즌 마무리에서 선발로 복귀, 5이닝 1실점 우승 확정.", emoji: "🔥",
       stat: { label: "KS ERA", value: "1.35" },
-      photo: "https://upload.wikimedia.org/wikipedia/commons/f/f6/Won_Tae-in_%28ZGbHvfTK0V4%29.png",
+      photo: "assets/players/won.jpg",
     },
     {
       name: "아리엘 후라도", group: "투수", role: "선발 투수", tag: "PO 2승 ERA 1.32",
       desc: "플레이오프 2경기 2승. 가을야구의 든든한 선발 축.", emoji: "⚾",
       stat: { label: "PO ERA", value: "1.32" },
-      photo: "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0e/Urias_and_Jurado_%2834853012723%29_%28cropped%29.jpg/960px-Urias_and_Jurado_%2834853012723%29_%28cropped%29.jpg",
+      photo: "assets/players/jurado.jpg",
     },
     {
       name: "크리스 페덱", group: "투수", role: "선발 · 불펜", tag: "KS 4이닝 세이브",
       desc: "KS 2경기 11이닝 ERA 0.82. 5차전 4이닝 퍼펙트로 우승을 잠갔다.", emoji: "🔒",
       stat: { label: "KS ERA", value: "0.82" },
+      photo: "assets/players/paddack.jpg",
     },
     {
       name: "김재윤", group: "투수", role: "마무리 투수", tag: "35세이브 리그 1위",
@@ -194,7 +199,15 @@ window.LIONS_DATA = {
     {
       name: "김헌곤", group: "외야수", role: "외야수", tag: "베테랑",
       desc: "경험으로 후배들을 이끄는 외야 베테랑.", emoji: "🎖️",
-      photo: "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/30/%EA%B9%80%ED%97%8C%EA%B3%A4_%EC%84%A0%EC%88%98.jpg/960px-%EA%B9%80%ED%97%8C%EA%B3%A4_%EC%84%A0%EC%88%98.jpg",
+      photo: "assets/players/kim.jpg",
+    },
+    {
+      name: "디아즈", group: "내야수", role: "1루수 · 지명타자", tag: "2026 외인 타자",
+      desc: "2026시즌 삼성 중심 타선을 맡은 외국인 타자. 1루 수비와 지명타자로 출전했습니다.", emoji: "💥",
+    },
+    {
+      name: "류지혁", group: "내야수", role: "2루수 · 3루수", tag: "내야 유틸리티",
+      desc: "2루와 3루를 오가며 내야를 지킨 베테랑. 상황에 따라 타순을 옮겨 출전했습니다.", emoji: "🧩",
     },
 
     /* 2026 퓨처스리그 주요 유망주 (공식 로스터 + 퓨처스 기록 기준) */
@@ -240,14 +253,161 @@ window.LIONS_DATA = {
     },
   ],
 
+  /* ---------------------------------------------------------
+     선수 메타데이터
+     - positions: 실제 출전 가능한 수비 포지션만 등록
+     - 확인되지 않은 포지션은 임의로 추가하지 않습니다.
+     --------------------------------------------------------- */
+  playerMeta: {
+    "구자욱": { positions: ["LF", "RF", "DH"] },
+    "강민호": { positions: ["C"] },
+    "최형우": { positions: ["DH", "LF"] },
+    "원태인": { positions: ["P"] },
+    "아리엘 후라도": { positions: ["P"] },
+    "크리스 페덱": { positions: ["P"] },
+    "김재윤": { positions: ["P"] },
+    "이승민": { positions: ["P"] },
+    "배찬승": { positions: ["P"] },
+    "장찬희": { positions: ["P"] },
+    "최원태": { positions: ["P"] },
+    "백정현": { positions: ["P"] },
+    "이재현": { positions: ["SS"] },
+    "김영웅": { positions: ["3B"] },
+    "김지찬": { positions: ["CF", "LF"] },
+    "박승규": { positions: ["RF", "LF"] },
+    "김성윤": { positions: ["RF", "CF", "LF"] },
+    "김헌곤": { positions: ["LF", "RF"] },
+    "디아즈": { positions: ["1B", "DH"] },
+    "류지혁": { positions: ["2B", "3B"] },
+    "이창용": { positions: ["2B", "SS"] },
+    "이한민": { positions: ["3B", "1B"] },
+    "김태훈": { positions: ["LF", "RF"] },
+    "윤정빈": { positions: ["CF", "LF"] },
+    "김재혁": { positions: ["LF", "RF"] },
+    "김현준": { positions: ["CF", "LF"] },
+    "김백산": { positions: ["P"] },
+    "김서준": { positions: ["P"] },
+  },
+
+  /* ---------------------------------------------------------
+     인스타그램: 2026-11-20 직접 프로필을 열어 표시 이름과
+     소속/활동을 확인한 계정만 등록했습니다.
+     - 확인 불가 계정은 데이터 자체를 만들지 않습니다.
+     - UI는 미등록 선수를 '계정 정보 없음'으로 표시합니다.
+     --------------------------------------------------------- */
+  instagramAccounts: {
+    "구자욱": { handle: "koojawook", checkedAt: "2026-11-20" },
+    "강민호": { handle: "mmmmmmminho_47", checkedAt: "2026-11-20" },
+    "원태인": { handle: "won_tae_in", checkedAt: "2026-11-20" },
+    "최원태": { handle: "wontae20", checkedAt: "2026-11-20" },
+    "이재현": { handle: "lee.j.hyeon7_", checkedAt: "2026-11-20" },
+    "김영웅": { handle: "young.woong_30", checkedAt: "2026-11-20" },
+    "김지찬": { handle: "01kimjichan", checkedAt: "2026-11-20" },
+    "박승규": { handle: "seung_kyu00", checkedAt: "2026-11-20" },
+    "김성윤": { handle: "yo39on", checkedAt: "2026-11-20" },
+    "김헌곤": { handle: "gjsrhs11", checkedAt: "2026-11-20" },
+    "이승민": { handle: "sssss__min", checkedAt: "2026-11-20" },
+    "배찬승": { handle: "c_s_bae_0101", checkedAt: "2026-11-20" },
+    "장찬희": { handle: "cks_gml_60", checkedAt: "2026-11-20" },
+    "아리엘 후라도": { handle: "ariel.b_30", checkedAt: "2026-11-20" },
+    "크리스 페덱": { handle: "paddack29", checkedAt: "2026-11-20" },
+  },
+
+  instagramNotes: {
+    "최형우": "@cc_hyeong는 표시 이름만 일치하고 본인 확인 근거가 부족해 연결하지 않았습니다.",
+    "김재윤": "본인 운영 계정을 확인하지 못했습니다.",
+    "백정현": "본인 운영 계정을 확인하지 못했습니다.",
+    "디아즈": "본인 운영 계정을 확인하지 못했습니다.",
+    "류지혁": "본인 운영 계정을 확인하지 못했습니다.",
+  },
+
+  /* ---------------------------------------------------------
+     AI 시뮬레이션 기준 데이터
+     - nextGame: 2026시즌 종료로 공식 '다음 경기'가 없어 null.
+     - expectedLineup: 공식 확정 라인업이 아닌 팬 예상 조합.
+     - 실제 확인된 개인 기록은 batterSamples/pitcherSamples에만 저장.
+     - 나머지는 모델 사전확률(리그 평균 가정)을 사용하며 화면에 명시.
+     --------------------------------------------------------- */
+  simulation: {
+    asOf: "2026-11-15",
+    checkedAt: "2026-11-20",
+    nextGame: null,
+    nextGameNote: "2026시즌이 종료되어 공식 다음 경기 일정이 없습니다. 아래는 2026 한국시리즈 기준 가상 매치업입니다.",
+    expectedLineup: {
+      status: "expected",
+      asOf: "2026-11-15",
+      basis: "2026 한국시리즈 주요 출전 조합을 바탕으로 한 팬 예상 라인업",
+      note: "구단 공식 발표 라인업이 아닙니다. 선수 컨디션·상대 선발·부상에 따라 달라질 수 있습니다.",
+      pitcher: "원태인",
+      batters: [
+        { name: "김지찬", position: "CF" },
+        { name: "김성윤", position: "RF" },
+        { name: "구자욱", position: "LF" },
+        { name: "최형우", position: "DH" },
+        { name: "디아즈", position: "1B" },
+        { name: "강민호", position: "C" },
+        { name: "김영웅", position: "3B" },
+        { name: "이재현", position: "SS" },
+        { name: "류지혁", position: "2B" },
+      ],
+    },
+    iterations: 10000,
+    seed: "vamos-lions-2026",
+    homeAdvantage: 0.018,
+    /* 실제 2026 리그 평균이 아니라, 결측치를 대체하는 모델 사전확률입니다. */
+    priors: {
+      label: "리그 평균 가정(모델 사전확률)",
+      obp: 0.335,
+      slg: 0.400,
+      avg: 0.260,
+      kRate: 0.205,
+      bbRate: 0.083,
+      hbpRate: 0.012,
+      runsPerGame: 4.6,
+      pitcherEra: 4.20,
+    },
+    /* 확인된 개인 기록만. partial은 표본이 작아 모델에서 제한적으로 반영합니다. */
+    batterSamples: {
+      "구자욱": { avg: 0.371, obp: 0.458, slg: 0.581, source: "2026 정규시즌", status: "confirmed" },
+      "최형우": { avg: 0.357, source: "2026 한국시리즈", status: "partial" },
+      "박승규": { avg: 0.500, source: "2026 한국시리즈", status: "partial" },
+    },
+    pitcherSamples: {
+      "원태인": { era: 1.35, source: "2026 한국시리즈 2경기", status: "partial" },
+      "아리엘 후라도": { era: 1.32, source: "2026 플레이오프 2경기", status: "partial" },
+      "크리스 페덱": { era: 0.82, ip: 11, source: "2026 한국시리즈 2경기", status: "partial" },
+      "김재윤": { saves: 35, source: "2026 정규시즌", status: "partial" },
+      "이승민": { era: 0.00, source: "2026 한국시리즈", status: "partial" },
+      "배찬승": { era: 0.00, source: "2026 한국시리즈", status: "partial" },
+    },
+    opponents: [
+      { id: "KT", name: "KT 위즈", short: "KT", pct: 0.647, wins: 90, draws: 5, losses: 49, note: "2026 정규시즌 1위 · 한국시리즈 상대" },
+      { id: "KIA", name: "KIA 타이거즈", short: "KIA", pct: 0.556, wins: 79, draws: 2, losses: 63, note: "2026 정규시즌 3위 · 플레이오프 상대" },
+      { id: "LG", name: "LG 트윈스", short: "LG", pct: 0.545, wins: 78, draws: 1, losses: 65, note: "2026 정규시즌 4위" },
+      { id: "DOOSAN", name: "두산 베어스", short: "두산", pct: 0.525, wins: 73, draws: 5, losses: 66, note: "2026 정규시즌 5위" },
+    ],
+    opponentDataNote: "상대 팀의 개별 타자·투수 2026 시즌 기록은 이 사이트에 수집되어 있지 않습니다. 상대 타선은 리그 평균 모델로 계산하며, 팀 승률만 실제 값으로 반영합니다.",
+  },
+
   /* 선수 사진 출처 (Wikimedia Commons 무료 라이선스) */
   photoCredits: [
-    { name: "구자욱", author: "WiiWii", license: "CC BY 4.0", href: "https://commons.wikimedia.org/wiki/File:2017_09_01_%EC%82%BC%EC%84%B1_vs_SK_%EA%B5%BF%EB%B0%94%EC%9D%B4_%EB%9D%BC%EC%9D%B4%EC%98%A8%ED%82%B9_1_(4).jpg" },
-    { name: "강민호", author: "Seohae1999", license: "CC BY-SA 3.0", href: "https://commons.wikimedia.org/wiki/File:Kang_Min-ho_2023.jpg" },
-    { name: "원태인", author: "LionsTV", license: "CC BY 3.0", href: "https://commons.wikimedia.org/wiki/File:Won_Tae-in_(ZGbHvfTK0V4).png" },
-    { name: "아리엘 후라도", author: "Th3TruthPhotos", license: "CC BY 2.0", href: "https://commons.wikimedia.org/wiki/File:Urias_and_Jurado_(34853012723)_(cropped).jpg" },
-    { name: "김헌곤", author: "LionsTV", license: "CC BY 3.0", href: "https://commons.wikimedia.org/wiki/File:%EA%B9%80%ED%97%8C%EA%B3%A4_%EC%84%A0%EC%88%98.jpg" },
+    { name: "구자욱", author: "WiiWii", license: "CC BY 4.0", period: "2017", href: "https://commons.wikimedia.org/wiki/File:2017_09_01_%EC%82%BC%EC%84%B1_vs_SK_%EA%B5%BF%EB%B0%94%EC%9D%B4_%EB%9D%BC%EC%9D%B4%EC%98%A8%ED%82%B9_1_(4).jpg" },
+    { name: "강민호", author: "Seohae1999", license: "CC BY-SA 3.0", period: "2023", href: "https://commons.wikimedia.org/wiki/File:Kang_Min-ho_2023.jpg" },
+    { name: "최형우", author: "OSEN SPORTS", license: "CC BY 3.0", period: "2021 KIA 시절", href: "https://commons.wikimedia.org/wiki/File:%EC%B5%9C%ED%98%95%EC%9A%B0_%EC%95%BC%EA%B5%AC_%EC%84%A0%EC%88%98.jpg" },
+    { name: "원태인", author: "LionsTV", license: "CC BY 3.0", period: "2025", href: "https://commons.wikimedia.org/wiki/File:Won_Tae-in_(ZGbHvfTK0V4).png" },
+    { name: "아리엘 후라도", author: "Th3TruthPhotos", license: "CC BY 2.0", period: "2017 텍사스 시절", href: "https://commons.wikimedia.org/wiki/File:Urias_and_Jurado_(34853012723)_(cropped).jpg" },
+    { name: "크리스 페덱", author: "Ryan Casey Aguinaldo", license: "CC BY-SA 4.0", period: "2021 샌디에이고 시절", href: "https://commons.wikimedia.org/wiki/File:Chris_Paddack_7.10.21_(cropped).jpg" },
+    { name: "김헌곤", author: "LionsTV", license: "CC BY 3.0", period: "2019", href: "https://commons.wikimedia.org/wiki/File:%EA%B9%80%ED%97%8C%EA%B3%A4_%EC%84%A0%EC%88%98.jpg" },
   ],
+
+  // Only approved official/project profile portraits belong here.
+  // Each record requires src, verifiedName, source, and optional objectPosition.
+  // Archived Commons game photos above are not eligible for player cards.
+  playerProfiles: {},
+  photoPolicy: {
+    note: "공식 또는 제공된 프로필 사진 중 사용 권한과 선수 이름이 확인된 사진만 표시합니다. 현재 등록된 프로필 사진이 없어 기본 실루엣을 사용합니다. 과거 경기·기사 사진은 카드에 사용하지 않습니다.",
+    defaultAlt: "삼성 라이온즈 기본 프로필 이미지",
+  },
 
   staff: [
     { name: "박진만", role: "1군 감독", tag: "2026 KS 우승 감독", desc: "선수로 6번, 감독으로 첫 우승. 정규시즌 최소 실책·수비율 1위를 만든 '수비 야구'와 과감한 단기전 운용으로 V9을 이끌었다.", emoji: "🦁" },

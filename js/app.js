@@ -263,8 +263,13 @@
 
   function rosterCard(player) {
     const name = escapeHTML(player.name);
-    const insta = `https://www.instagram.com/explore/search/keyword/?q=${encodeURIComponent(player.name + " 삼성 라이온즈")}`;
+    const ig = DATA.instagramAccounts && DATA.instagramAccounts[player.name];
+    const meta = DATA.playerMeta && DATA.playerMeta[player.name];
+    const positions = meta && Array.isArray(meta.positions) ? meta.positions.join(" · ") : "";
     const news = `https://search.naver.com/search.naver?query=${encodeURIComponent(player.name + " 삼성 라이온즈")}`;
+    const instaLink = ig
+      ? `<a class="mini-link" href="https://www.instagram.com/${encodeURIComponent(ig.handle)}/" target="_blank" rel="noopener" aria-label="${name} 인스타그램 @${escapeHTML(ig.handle)}">Instagram @${escapeHTML(ig.handle)} ↗</a>`
+      : `<span class="mini-link is-disabled" title="${escapeHTML((DATA.instagramNotes && DATA.instagramNotes[player.name]) || "본인 계정을 확인하지 못했습니다.")}" aria-label="${name} 인스타그램 계정 정보 없음">계정 정보 없음</span>`;
 
     return `
       <article class="roster-card" data-group="${escapeHTML(player.group)}">
@@ -274,10 +279,11 @@
         </div>
         <h3>${name}</h3>
         <p class="roster-role">${escapeHTML(player.role)}</p>
+        ${positions ? `<span class="roster-positions">${escapeHTML(positions)}</span>` : ""}
         <span class="roster-tag">${escapeHTML(player.tag)}</span>
         <p class="roster-desc">${escapeHTML(player.desc)}</p>
         <div class="roster-links">
-          <a class="mini-link" href="${insta}" target="_blank" rel="noopener" aria-label="${name} 인스타그램 검색">Instagram ↗</a>
+          ${instaLink}
           <a class="mini-link" href="${news}" target="_blank" rel="noopener" aria-label="${name} 뉴스 검색">뉴스 ↗</a>
         </div>
       </article>`;
@@ -383,7 +389,6 @@
     </article>`).join("");
 
   /* ---------------- 팬 보드 ---------------- */
-  const CHEER_KEY = "vamos-lions-cheers-v1";
   const cheerForm = $("#cheerForm");
   const cheerName = $("#cheerName");
   const cheerMsg = $("#cheerMsg");
@@ -391,28 +396,7 @@
   const cheerCount = $("#cheerCount");
   const boardTotal = $("#boardTotal");
 
-  const seedCheers = [
-    { id: "seed-1", name: "라팍3루", message: "12년 기다렸다. 이제 왕조 다시 시작! 🦁💙", at: "2026-11-09T10:24:00+09:00" },
-    { id: "seed-2", name: "구자욱팬", message: "주장님 한국시리즈 MVP 축하드려요. 내년에도 함께 갑니다!", at: "2026-11-09T12:02:00+09:00" },
-    { id: "seed-3", name: "대구아재", message: "라팍 첫 우승의 순간을 직관할 수 있어서 행복했습니다.", at: "2026-11-10T08:41:00+09:00" },
-  ];
-
-  function loadCheers() {
-    try {
-      const raw = localStorage.getItem(CHEER_KEY);
-      if (raw) {
-        const parsed = JSON.parse(raw);
-        if (Array.isArray(parsed)) return parsed;
-      }
-    } catch (e) { /* ignore */ }
-    return seedCheers.slice();
-  }
-
-  function saveCheers(list) {
-    try { localStorage.setItem(CHEER_KEY, JSON.stringify(list)); } catch (e) { /* ignore */ }
-  }
-
-  let cheers = loadCheers();
+  let cheers = window.LIONS_BOARD.posts();
 
   function timeAgo(iso) {
     const then = new Date(iso).getTime();
@@ -459,16 +443,25 @@
 
       content.append(meta, msg);
 
-      const del = document.createElement("button");
+      const del = document.createElement(cheer.scope === "local" ? "button" : "a");
       del.className = "cheer-del";
-      del.type = "button";
-      del.setAttribute("aria-label", `${cheer.name}의 응원 삭제`);
-      del.textContent = "✕";
-      del.addEventListener("click", () => {
-        cheers = cheers.filter((item) => item.id !== cheer.id);
-        saveCheers(cheers);
-        renderCheers();
-      });
+      if (cheer.scope === "local") {
+        del.type = "button";
+        del.setAttribute("aria-label", `${cheer.name}의 브라우저 응원 삭제`);
+        del.textContent = "✕";
+        del.addEventListener("click", () => window.LIONS_BOARD.remove(cheer.id));
+        const share = document.createElement("a");
+        share.href = window.LIONS_BOARD.publishUrl(cheer);
+        share.target = "_blank";
+        share.rel = "noopener";
+        share.textContent = "이 브라우저 · GitHub에 공개 ↗";
+        content.append(share);
+      } else {
+        del.href = cheer.href || "https://github.com/vamoslions/lionsfan/issues";
+        del.target = "_blank";
+        del.rel = "noopener";
+        del.textContent = cheer.scope === "demo" ? "데모" : "공개 ↗";
+      }
 
       li.append(avatar, content, del);
       cheerList.appendChild(li);
@@ -485,20 +478,20 @@
     const message = cheerMsg.value.trim();
     if (!name || !message) return;
 
-    cheers.push({
-      id: "c-" + Date.now() + "-" + Math.random().toString(36).slice(2, 7),
-      name: name.slice(0, 12),
-      message: message.slice(0, 80),
-      at: new Date().toISOString(),
-    });
-    saveCheers(cheers);
-    renderCheers();
+    if (!window.LIONS_BOARD.add(name, message)) return;
     cheerForm.reset();
     cheerCount.textContent = "0";
     cheerName.focus();
   });
 
-  renderCheers();
+  window.LIONS_BOARD.subscribe((posts, status) => {
+    cheers = posts;
+    renderCheers();
+    const boardStatus = $("#boardStatus");
+    if (boardStatus) boardStatus.textContent = status;
+  });
+  const boardRefresh = $("#boardRefresh");
+  if (boardRefresh) boardRefresh.addEventListener("click", () => window.LIONS_BOARD.refresh(true));
 
   /* ---------------- 마지막 업데이트 ---------------- */
   const lastUpdated = $("#lastUpdated");

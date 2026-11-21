@@ -20,6 +20,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="css/style.css" />
+<link rel="stylesheet" href="css/home.css" />
 </head>
 <body>
 <a class="skip-link" href="#main">본문으로 바로가기</a>
@@ -202,7 +203,7 @@
         <p class="kicker"><span>02</span> THE LIONS</p>
         <div class="head-row">
           <h2>선수단</h2>
-          <p>2026 우승을 함께 만든 얼굴들. 이름을 누르면 Instagram과 최신 뉴스를 바로 찾아볼 수 있습니다.</p>
+          <p>2026 우승을 함께 만든 얼굴들. 본인 확인이 끝난 Instagram 계정만 연결하고, 확인되지 않은 선수는 ‘계정 정보 없음’으로 표시합니다.</p>
         </div>
       </div>
 
@@ -402,7 +403,7 @@
         <p class="kicker"><span>08</span> FAN ZONE</p>
         <div class="head-row">
           <h2>오늘의 응원 한마디</h2>
-          <p>경기 날이 아니어도 응원은 계속됩니다. 짧은 한마디를 남겨보세요. (이 브라우저에만 저장됩니다)</p>
+          <p>이 브라우저의 탭에 즉시 반영됩니다. 모두에게 공유하려면 저장한 글의 ‘GitHub에 공개’를 누르세요.</p>
         </div>
       </div>
 
@@ -428,6 +429,8 @@
             <span id="boardTotal">0개의 응원</span>
           </div>
           <ul class="cheer-list" id="cheerList"></ul>
+          <p id="boardStatus" class="board-status" role="status"></p>
+          <button id="boardRefresh" class="btn btn-ghost btn-sm" type="button">공개 글 다시 확인</button>
         </div>
       </div>
     </div>
@@ -486,6 +489,9 @@
 <button class="to-top" id="toTop" type="button" aria-label="맨 위로">↑</button>
 
 <script src="js/data.js"></script>
+<script src="js/fanboard.js"></script>
+<script src="js/live-data.js"></script>
+<script src="js/home.js"></script>
 <script src="js/app.js"></script>
 <script type="application/ld+json">
 {

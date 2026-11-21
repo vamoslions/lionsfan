@@ -19,6 +19,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="css/style.css" />
 <link rel="stylesheet" href="css/dashboard.css" />
+<link rel="stylesheet" href="css/home.css" />
 </head>
 <body>
 <a class="skip-link" href="#main">본문으로 바로가기</a>
@@ -86,6 +87,7 @@
       <a href="#stats"><svg class="icon"><use href="#i-chart"></use></svg><span>선수 기록</span><small>04</small></a>
       <a href="#roster"><svg class="icon"><use href="#i-users"></use></svg><span>선수단</span><small>05</small></a>
       <a href="#squad"><svg class="icon"><use href="#i-star"></use></svg><span>나만의 스쿼드</span><small>06</small></a>
+      <a href="#simulation"><svg class="icon"><use href="#i-chart"></use></svg><span>AI 경기 시뮬레이션</span><small>07</small></a>
       <a href="#tv"><svg class="icon"><use href="#i-play"></use></svg><span>라이온즈TV</span><small>07</small></a>
       <a href="#sns"><svg class="icon"><use href="#i-share"></use></svg><span>SNS · 링크</span><small>08</small></a>
       <a href="#fanzone"><svg class="icon"><use href="#i-heart"></use></svg><span>팬 보드</span><small>09</small></a>
@@ -220,7 +222,7 @@
           <div class="widget-head">
             <div class="widget-title">
               <span class="w-icon w-icon-gold"><svg class="icon"><use href="#i-star"></use></svg></span>
-              <div><h2>2027 FA 트래커</h2><p id="faSub">삼성 3명 · 11.17 협상 개시</p></div>
+              <div><h2>FA 공식 현황</h2><p id="faSub">공식 발표 확인 중</p></div>
             </div>
             <span class="mini-badge badge-gold">STOVE LEAGUE</span>
           </div>
@@ -241,7 +243,7 @@
           <div class="widget-head">
             <div class="widget-title">
               <span class="w-icon"><svg class="icon"><use href="#i-news"></use></svg></span>
-              <div><h2>라이온즈 뉴스</h2><p>2026년 11월 · 최신 5건</p></div>
+              <div><h2>라이온즈 뉴스</h2><p>연합뉴스 RSS · 자동 갱신</p></div>
             </div>
             <a class="w-link" href="https://www.samsunglions.com/intro/intro02.asp" target="_blank" rel="noopener">공식 소식 ↗</a>
           </div>
@@ -249,7 +251,7 @@
           <ul class="news-list" id="newsList"></ul>
           <div class="widget-foot">
             <span class="foot-note">기사 원문으로 연결됩니다</span>
-            <span class="foot-note" id="newsUpdated">2026.11.15 기준</span>
+            <span class="foot-note" id="newsUpdated">마지막 성공 시각 확인 중</span>
           </div>
         </article>
 
@@ -348,7 +350,7 @@
           <div class="widget-head">
             <div class="widget-title">
               <span class="w-icon"><svg class="icon"><use href="#i-users"></use></svg></span>
-              <div><h2>선수단</h2><p>1군 18명 + 퓨처스 유망주 8명</p></div>
+              <div><h2>선수단</h2><p>1군 20명 + 퓨처스 유망주 8명</p></div>
             </div>
             <a class="w-link" href="#squad">나만의 스쿼드 ↓</a>
           </div>
@@ -367,9 +369,9 @@
             </label>
           </div>
           <div class="dash-roster-grid" id="dashRoster"></div>
-          <p class="widget-note">1군은 2026 우승 멤버, <strong>퓨처스</strong> 탭은 2026 퓨처스리그 주요 유망주입니다. 사진이 있는 선수는 Wikimedia Commons 무료 라이선스 이미지, 나머지는 스타일 카드로 표시합니다.</p>
+          <p class="widget-note">프로필 사진 미제공 선수는 기본 실루엣으로 표시합니다. 인스타그램은 확인된 계정만 연결합니다.</p>
           <details class="photo-credits">
-            <summary>사진 출처 · 라이선스</summary>
+            <summary>이전 사진 자료 · 현재 선수 카드에는 사용하지 않음</summary>
             <ul id="photoCredits"></ul>
           </details>
         </article>
@@ -379,15 +381,24 @@
           <div class="widget-head">
             <div class="widget-title">
               <span class="w-icon w-icon-gold"><svg class="icon"><use href="#i-users"></use></svg></span>
-              <div><h2>나만의 스쿼드</h2><p>선발 1명 + 타자 9명 · 클릭으로 라인업 완성</p></div>
+              <div><h2>나만의 스쿼드</h2><p>타순 9명 + 선발 1명 · 포지션까지 직접 구성</p></div>
             </div>
             <div class="squad-head-actions">
               <span class="mini-badge badge-gold" id="squadCount">0 / 10</span>
+              <button class="view-btn" id="squadLoadExpected" type="button">예상 라인업</button>
               <button class="view-btn" id="squadReset" type="button">초기화</button>
             </div>
           </div>
+          <div class="squad-toolbar">
+            <p class="squad-source-note"><span class="mini-badge badge-blue">예상</span> 2026 한국시리즈 출전 조합 기반 · 공식 확정 라인업 아님</p>
+            <p class="squad-legend"><span class="fit-dot"></span> 수비 가능 <span class="out-dot"></span> 비주 포지션</p>
+          </div>
           <div class="squad-layout">
             <div class="squad-field">
+              <div class="squad-diamond-wrap">
+                <div class="squad-diamond" id="squadDiamond" role="group" aria-label="수비 위치 다이아몬드"></div>
+                <p class="diamond-hint">포지션을 누르면 해당 타순이 선택됩니다</p>
+              </div>
               <button class="squad-pitcher" id="squadPitcher" type="button">
                 <span class="sq-pitcher-label">선발 투수</span>
                 <b id="squadPitcherName">선수 선택</b>
@@ -405,15 +416,52 @@
                   <button class="mini-tab" data-squad-filter="외야수" type="button">외야수</button>
                   <button class="mini-tab" data-squad-filter="퓨처스" type="button">퓨처스</button>
                 </div>
-                <span class="squad-pool-note">선택된 선수를 다시 누르면 빠집니다</span>
+                <span class="squad-pool-note" id="squadPoolNote">선택된 선수를 다시 누르면 빠집니다</span>
               </div>
               <div class="squad-pool" id="squadPool"></div>
               <div class="squad-foot">
-                <p id="squadStatus" role="status">슬롯을 누른 뒤 선수를 선택하세요. 자동 저장됩니다.</p>
-                <button class="foot-link" id="squadCopy" type="button">라인업 복사</button>
+                <p id="squadStatus" role="status">슬롯을 누른 뒤 선수를 선택하세요. 변경 사항은 자동 저장됩니다.</p>
+                <div class="squad-foot-actions">
+                  <button class="foot-link" id="squadSave" type="button">저장</button>
+                  <button class="foot-link" id="squadCopy" type="button">라인업 복사</button>
+                </div>
               </div>
             </div>
           </div>
+        </article>
+
+        <!-- AI SIMULATION -->
+        <article class="widget sim-widget span-12 reveal" id="simulation">
+          <div class="widget-head">
+            <div class="widget-title">
+              <span class="w-icon w-icon-gold"><svg class="icon"><use href="#i-chart"></use></svg></span>
+              <div><h2>AI 경기 시뮬레이션</h2><p>내 라인업으로 10,000경기 몬테카를로</p></div>
+            </div>
+            <span class="mini-badge badge-gold" id="simBadge">10,000회</span>
+          </div>
+          <div class="sim-intro">
+            <p><strong>실제 데이터</strong>는 확인된 개인 기록만 사용하고, 비어 있는 기록은 <strong>리그 평균 가정값</strong>으로 대체합니다. 결과는 실제 경기 예측이 아닌 통계적 추정치입니다.</p>
+            <p class="sim-next-note"><strong>다음 경기:</strong> 2026시즌 종료로 공식 다음 경기 일정이 없습니다. 아래는 2026 한국시리즈 기준 가상 매치업입니다.</p>
+            <p id="simDataStatus">데이터 기준일 2026-11-15 · 상대 팀 개별 기록 미수집</p>
+            <p class="sim-limits"><strong>미수집 항목:</strong> 최근 5·10경기 스플릿, 좌우 투수 상대 성적, 불펜 소모도, 상대 팀 개별 라인업·선수 기록. 해당 값은 임의로 만들지 않습니다.</p>
+          </div>
+          <div class="sim-setup">
+            <label class="sim-select">
+              <span>가상 상대</span>
+              <select id="simOpponent" aria-label="시뮬레이션 상대 팀"></select>
+            </label>
+            <div class="sim-lineup-preview" id="simLineupPreview"></div>
+            <button class="btn btn-primary sim-run-btn" id="simRun" type="button">
+              <svg class="icon"><use href="#i-play"></use></svg> 시뮬레이션 실행
+            </button>
+          </div>
+          <div class="sim-loading" id="simLoading" hidden>
+            <div class="sim-loading-head"><b>10,000경기를 계산하고 있습니다</b><span id="simProgressText">0%</span></div>
+            <div class="sim-progress"><span id="simProgressBar"></span></div>
+            <p>타석 단위 확률 모델 · 시드 고정 · 결과 재현 가능</p>
+          </div>
+          <div class="sim-results" id="simResults" hidden></div>
+          <p class="sim-disclaimer">※ 본 결과는 2026-11-15 기준 확인된 기록과 리그 평균 가정값을 이용한 통계적 추정치입니다. 실제 경기 결과를 보장하지 않으며, 공식 예측·베팅 자료로 사용할 수 없습니다.</p>
         </article>
 
         <!-- FAN BOARD -->
@@ -427,13 +475,13 @@
           </div>
           <div class="board-share-note">
             <span class="board-dot" aria-hidden="true"></span>
-            GitHub 공유 보드 · 다른 팬의 글도 보입니다
+            같은 브라우저 즉시 동기화 · GitHub 공개 글 자동 확인
           </div>
           <form class="dash-cheer-form" id="cheerForm">
             <input type="text" id="cheerName" maxlength="12" placeholder="닉네임" aria-label="닉네임" required />
             <div class="cheer-input-row">
               <input type="text" id="cheerMsg" maxlength="80" placeholder="최강삼성! 🦁" aria-label="응원 메시지" required />
-              <button class="send-btn" type="submit" aria-label="GitHub에 응원 남기기" title="GitHub에서 작성"><svg class="icon"><use href="#i-send"></use></svg></button>
+              <button class="send-btn" type="submit" aria-label="이 브라우저에 응원 남기기" title="저장 후 GitHub에 공개할 수 있습니다"><svg class="icon"><use href="#i-send"></use></svg></button>
             </div>
           </form>
           <ul class="dash-cheer-list" id="cheerList"></ul>
@@ -511,6 +559,10 @@
 </div>
 
 <script src="js/data.js"></script>
+<script src="js/fanboard.js"></script>
+<script src="js/live-data.js"></script>
+<script src="js/home.js"></script>
+<script src="js/simulation.js"></script>
 <script src="js/dashboard.js"></script>
 </body>
 </html>

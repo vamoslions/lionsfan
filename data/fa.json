@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "season": 2027,
+  "lastSuccessAt": "2026-11-21T10:15:46.345470+00:00",
+  "approval": {
+    "title": "2027년 FA 승인 선수 명단 공시",
+    "href": "https://www.koreabaseball.com/MediaNews/Notice/View.aspx?bdSe=12243",
+    "date": "2026-11-16"
+  },
+  "players": [
+    {
+      "name": "원태인",
+      "status": "FA 승인 · 계약 공식 발표 미확인",
+      "announcementDate": "2026-11-16",
+      "source": "KBO",
+      "sourceUrl": "https://www.koreabaseball.com/MediaNews/Notice/View.aspx?bdSe=12243",
+      "contractConfirmed": false
+    },
+    {
+      "name": "전병우",
+      "status": "FA 승인 · 계약 공식 발표 미확인",
+      "announcementDate": "2026-11-16",
+      "source": "KBO",
+      "sourceUrl": "https://www.koreabaseball.com/MediaNews/Notice/View.aspx?bdSe=12243",
+      "contractConfirmed": false
+    },
+    {
+      "name": "구자욱",
+      "status": "FA 승인 · 계약 공식 발표 미확인",
+      "announcementDate": "2026-11-16",
+      "source": "KBO",
+      "sourceUrl": "https://www.koreabaseball.com/MediaNews/Notice/View.aspx?bdSe=12243",
+      "contractConfirmed": false
+    }
+  ],
+  "sources": [
+    "https://www.koreabaseball.com/MediaNews/Notice/List.aspx",
+    "https://www.samsunglions.com/intro/intro02.asp"
+  ],
+  "note": "KBO FA 승인 명단과 구단 공식 공지 기준. 계약·잔류·이적은 추측하지 않습니다. 공식 게시판 최근 목록 범위에서 확인하며, 타 구단 발표만 있는 이적은 자동 확정하지 않습니다."
+}
