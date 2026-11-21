@@ -443,25 +443,13 @@
 
       content.append(meta, msg);
 
-      const del = document.createElement(cheer.scope === "local" ? "button" : "a");
+      const del = document.createElement("a");
       del.className = "cheer-del";
-      if (cheer.scope === "local") {
-        del.type = "button";
-        del.setAttribute("aria-label", `${cheer.name}의 브라우저 응원 삭제`);
-        del.textContent = "✕";
-        del.addEventListener("click", () => window.LIONS_BOARD.remove(cheer.id));
-        const share = document.createElement("a");
-        share.href = window.LIONS_BOARD.publishUrl(cheer);
-        share.target = "_blank";
-        share.rel = "noopener";
-        share.textContent = "이 브라우저 · GitHub에 공개 ↗";
-        content.append(share);
-      } else {
-        del.href = cheer.href || "https://github.com/vamoslions/lionsfan/issues";
-        del.target = "_blank";
-        del.rel = "noopener";
-        del.textContent = cheer.scope === "demo" ? "데모" : "공개 ↗";
-      }
+      del.href = cheer.href || "https://github.com/vamoslions/lionsfan/issues";
+      del.target = "_blank";
+      del.rel = "noopener";
+      del.setAttribute("aria-label", `${cheer.name}의 GitHub 공개 글 열기`);
+      del.textContent = cheer.scope === "demo" ? "데모" : "공개 ↗";
 
       li.append(avatar, content, del);
       cheerList.appendChild(li);
@@ -478,10 +466,8 @@
     const message = cheerMsg.value.trim();
     if (!name || !message) return;
 
-    if (!window.LIONS_BOARD.add(name, message)) return;
-    cheerForm.reset();
-    cheerCount.textContent = "0";
-    cheerName.focus();
+    // Keep entered content until GitHub has actually saved the public issue.
+    window.LIONS_BOARD.publish(name, message);
   });
 
   window.LIONS_BOARD.subscribe((posts, status) => {

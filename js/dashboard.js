@@ -1289,16 +1289,16 @@
 
         body.append(top, msg);
 
-        if (post.href || post.scope === "local") {
+        if (post.href) {
           const link = document.createElement("a");
           link.className = "cheer-line-link";
-          link.href = post.href || window.LIONS_BOARD.publishUrl(post);
+          link.href = post.href;
           link.target = "_blank";
           link.rel = "noopener";
-          link.setAttribute("aria-label", post.scope === "local" ? `${post.name}의 응원을 GitHub에 공개` : `${post.name}의 GitHub 글 열기`);
-          link.textContent = post.scope === "local" ? "공개 ↗" : "↗";
+          link.setAttribute("aria-label", `${post.name}의 GitHub 공개 글 열기`);
+          link.textContent = "↗";
           const scope = document.createElement("small");
-          scope.textContent = post.scope === "local" ? "이 브라우저" : post.scope === "demo" ? "데모" : "GitHub 공개";
+          scope.textContent = post.scope === "demo" ? "데모" : "GitHub 공개";
           body.append(scope);
           li.append(avatar, body, link);
         } else {
@@ -1321,7 +1321,7 @@
       const message = cheerMsg ? cheerMsg.value.trim() : "";
       if (!name || !message) return;
 
-      if (window.LIONS_BOARD.add(name, message)) cheerForm.reset();
+      window.LIONS_BOARD.publish(name, message);
     });
   }
 

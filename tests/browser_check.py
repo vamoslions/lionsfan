@@ -19,22 +19,17 @@ def run(base, chrome):
             page.clock.install()
         magazine.goto(base + "/magazine.html", wait_until="networkidle")
         dashboard.goto(base + "/", wait_until="networkidle")
-        for text in ("첫 번째 테스트", "최신 테스트"):
-            magazine.locator("#cheerName").fill("두탭확인")
-            magazine.locator("#cheerMsg").fill(text)
-            magazine.locator("#cheerForm button[type=submit]").click()
-            dashboard.wait_for_function(
-                "(text) => document.querySelector('#cheerList').textContent.includes(text)", arg=text)
-        assert dashboard.locator("#cheerList .cheer-line").count() == 2
-        assert "최신 테스트" in dashboard.locator("#cheerList li").first.inner_text()
-        latest = magazine.evaluate("LIONS_BOARD.posts()[0]")
-        issues.extend([{
-            "number": 999, "title": "[팬보드] 두탭확인",
-            "body": f"최신 테스트\n\n---\n<!-- vamos-post:{latest['id']} -->",
-            "labels": [{"name": "fanboard"}], "created_at": latest["at"],
-            "html_url": "https://github.com/vamoslions/lionsfan/issues/999",
-        }] * 2)
-        dashboard.clock.fast_forward(61000)
+        for number, message, date in [
+            (999, "첫 번째 테스트", "2026-11-20T00:00:00Z"),
+            (1000, "최신 테스트", "2026-11-21T00:00:00Z"),
+        ]:
+            issues.append({
+                "number": number, "title": "[팬보드] 두탭확인", "body": message,
+                "labels": [{"name": "fanboard"}], "created_at": date,
+                "html_url": f"https://github.com/vamoslions/lionsfan/issues/{number}",
+            })
+        issues.append(issues[0])
+        dashboard.clock.fast_forward(181000)
         dashboard.evaluate("LIONS_BOARD.refresh(true)")
         dashboard.wait_for_function(
             "LIONS_BOARD.posts().some(post => post.scope === 'public')")
@@ -42,7 +37,8 @@ def run(base, chrome):
         magazine.wait_for_function(
             "LIONS_BOARD.posts().some(post => post.scope === 'public')")
         assert magazine.locator("#cheerList .cheer-item").count() == 2
-        print("PASS: two tabs, latest first, public/draft ID dedup, duplicate API records")
+        assert "최신 테스트" in dashboard.locator("#cheerList li").first.inner_text()
+        print("PASS: shared public data, latest first, duplicate issue ID removed")
         dashboard.wait_for_function("LIONS_LIVE.news && LIONS_LIVE.fa")
         before = dashboard.locator("#newsFeature").inner_text()
         stamp = dashboard.evaluate("LIONS_LIVE.news.lastSuccessAt")
