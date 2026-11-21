@@ -54,7 +54,9 @@ def run(base, chrome):
         assert "기존 데이터 유지" in dashboard.locator("#newsUpdated").inner_text()
         context.unroute("**/data/*.json")
         print("PASS: fetched real news/FA rendered; network failure keeps content/success timestamp")
-        assert dashboard.locator('#dashRoster img:not([src$="default.svg"])').count() == 0
+        assert dashboard.locator('#dashRoster img[data-profile-state="official"]').count() == 20
+        assert dashboard.evaluate("""LIONS_DATA.roster.every(player =>
+          LIONS_DATA.playerProfiles[player.name]?.verifiedName === player.name)""")
         simulation = dashboard.evaluate("""() => {
           const cfg = LIONS_DATA.simulation;
           const options = {lineup: cfg.expectedLineup.batters, pitcher: cfg.expectedLineup.pitcher,

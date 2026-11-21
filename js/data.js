@@ -8,7 +8,7 @@ window.LIONS_DATA = {
   meta: {
     lastUpdated: "2026-11-15",
     instagramCheckedAt: "2026-11-20",
-    photoCheckedAt: "2026-11-20",
+    photoCheckedAt: "2026-11-21",
     season: "2026",
     // 2027 개막 예상일 (공식 일정 발표 전까지는 '예상'으로 표시됩니다)
     nextSeasonOpener: "2027-03-27T14:00:00+09:00",
@@ -400,12 +400,42 @@ window.LIONS_DATA = {
     { name: "김헌곤", author: "LionsTV", license: "CC BY 3.0", period: "2019", href: "https://commons.wikimedia.org/wiki/File:%EA%B9%80%ED%97%8C%EA%B3%A4_%EC%84%A0%EC%88%98.jpg" },
   ],
 
-  // Only approved official/project profile portraits belong here.
-  // Each record requires src, verifiedName, source, and optional objectPosition.
-  // Archived Commons game photos above are not eligible for player cards.
-  playerProfiles: {},
+  // Official roster profile thumbnails, matched by name, position and player code.
+  // External display only: copyright remains with Samsung Lions. These are not
+  // licensed for redistribution; do not download/rehost without permission.
+  // Old roster.photo / Commons game photographs are deliberately not fallbacks.
+  playerProfiles: {
+    "구자욱": { verifiedName: "구자욱", officialName: "구자욱", playerCode: "A0033", src: "https://www.samsunglions.com/upload/player/A0033_player_img_square(2).jpg", source: "https://www.samsunglions.com/roster/roster_2.asp?pcode=A0033", checkedAt: "2026-11-21" },
+    "강민호": { verifiedName: "강민호", officialName: "강민호", playerCode: "A0354", src: "https://www.samsunglions.com/upload/player/A0354_player_img_square(2).png", source: "https://www.samsunglions.com/roster/roster_2.asp?pcode=A0354", checkedAt: "2026-11-21" },
+    "최형우": { verifiedName: "최형우", officialName: "최형우", playerCode: "A0616", src: "https://www.samsunglions.com/upload/player/A0616_player_img_square(4).jpg", source: "https://www.samsunglions.com/roster/roster_2.asp?pcode=A0616", checkedAt: "2026-11-21" },
+    "원태인": { verifiedName: "원태인", officialName: "원태인", playerCode: "A0399", src: "https://www.samsunglions.com/upload/player/A0399_player_img_square(2).png", source: "https://www.samsunglions.com/roster/roster_2.asp?pcode=A0399", checkedAt: "2026-11-21" },
+    "아리엘 후라도": { verifiedName: "아리엘 후라도", officialName: "후라도", playerCode: "A0568", src: "https://www.samsunglions.com/upload/player/A0568_player_img_square(2).png", source: "https://www.samsunglions.com/roster/roster_2.asp?pcode=A0568", checkedAt: "2026-11-21" },
+    "크리스 페덱": { verifiedName: "크리스 페덱", officialName: "페덱", playerCode: "A0620", src: "https://www.samsunglions.com/upload/player/A0620_player_img_square(4).png", source: "https://www.samsunglions.com/roster/roster_2.asp?pcode=A0620", checkedAt: "2026-11-21" },
+    "김재윤": { verifiedName: "김재윤", officialName: "김재윤", playerCode: "A0527", src: "https://www.samsunglions.com/upload/player/A0527_player_img_square.png", source: "https://www.samsunglions.com/roster/roster_2.asp?pcode=A0527", checkedAt: "2026-11-21" },
+    "이승민": { verifiedName: "이승민", officialName: "이승민", playerCode: "A0423", src: "https://www.samsunglions.com/upload/player/A0423_player_img_square(2).png", source: "https://www.samsunglions.com/roster/roster_2.asp?pcode=A0423", checkedAt: "2026-11-21" },
+    "배찬승": { verifiedName: "배찬승", officialName: "배찬승", playerCode: "A0552", src: "https://www.samsunglions.com/upload/player/A0552_player_img_square(2).png", source: "https://www.samsunglions.com/roster/roster_2.asp?pcode=A0552", checkedAt: "2026-11-21" },
+    "장찬희": { verifiedName: "장찬희", officialName: "장찬희", playerCode: "A0605", src: "https://www.samsunglions.com/upload/player/A0605_player_img_square(2).png", source: "https://www.samsunglions.com/roster/roster_2.asp?pcode=A0605", checkedAt: "2026-11-21" },
+    "최원태": { verifiedName: "최원태", officialName: "최원태", playerCode: "A0567", src: "https://www.samsunglions.com/upload/player/A0567_player_img_square(2).png", source: "https://www.samsunglions.com/roster/roster_2.asp?pcode=A0567", checkedAt: "2026-11-21" },
+    "백정현": { verifiedName: "백정현", officialName: "백정현", playerCode: "77446", src: "https://www.samsunglions.com/upload/player/77446_player_img_square(2).png", source: "https://www.samsunglions.com/roster/roster_2.asp?pcode=77446", checkedAt: "2026-11-21" },
+    "이재현": { verifiedName: "이재현", officialName: "이재현", playerCode: "A0466", src: "https://www.samsunglions.com/upload/player/A0466_player_img_square(2).png", source: "https://www.samsunglions.com/roster/roster_2.asp?pcode=A0466", checkedAt: "2026-11-21" },
+    "김영웅": { verifiedName: "김영웅", officialName: "김영웅", playerCode: "A0468", src: "https://www.samsunglions.com/upload/player/A0468_player_img_square(2).png", source: "https://www.samsunglions.com/roster/roster_2.asp?pcode=A0468", checkedAt: "2026-11-21" },
+    "김지찬": { verifiedName: "김지찬", officialName: "김지찬", playerCode: "A0428", src: "https://www.samsunglions.com/upload/player/A0428_player_img_square(2).png", source: "https://www.samsunglions.com/roster/roster_2.asp?pcode=A0428", checkedAt: "2026-11-21" },
+    "박승규": { verifiedName: "박승규", officialName: "박승규", playerCode: "A0409", src: "https://www.samsunglions.com/upload/player/A0409_player_img_square.jpg", source: "https://www.samsunglions.com/roster/roster_2.asp?pcode=A0409", checkedAt: "2026-11-21" },
+    "김성윤": { verifiedName: "김성윤", officialName: "김성윤", playerCode: "A0326", src: "https://www.samsunglions.com/upload/player/A0326_player_img_square(2).png", source: "https://www.samsunglions.com/roster/roster_2.asp?pcode=A0326", checkedAt: "2026-11-21" },
+    "김헌곤": { verifiedName: "김헌곤", officialName: "김헌곤", playerCode: "21108", src: "https://www.samsunglions.com/upload/player/21108_player_img_square(2).png", source: "https://www.samsunglions.com/roster/roster_2.asp?pcode=21108", checkedAt: "2026-11-21" },
+    "디아즈": { verifiedName: "디아즈", officialName: "디아즈", playerCode: "A0549", src: "https://www.samsunglions.com/upload/player/A0549_player_img_square(2).png", source: "https://www.samsunglions.com/roster/roster_2.asp?pcode=A0549", checkedAt: "2026-11-21" },
+    "류지혁": { verifiedName: "류지혁", officialName: "류지혁", playerCode: "A0515", src: "https://www.samsunglions.com/upload/player/A0515_player_img_square(2).png", source: "https://www.samsunglions.com/roster/roster_2.asp?pcode=A0515", checkedAt: "2026-11-21" },
+    "이창용": { verifiedName: "이창용", officialName: "이창용", playerCode: "A0456", src: "https://www.samsunglions.com/upload/player/A0456_player_img_square(2).png", source: "https://www.samsunglions.com/roster/roster_2.asp?pcode=A0456", checkedAt: "2026-11-21" },
+    "이한민": { verifiedName: "이한민", officialName: "이한민", playerCode: "A0615", src: "https://www.samsunglions.com/upload/player/A0615_player_img_square(2).png", source: "https://www.samsunglions.com/roster/roster_2.asp?pcode=A0615", checkedAt: "2026-11-21" },
+    "김태훈": { verifiedName: "김태훈", officialName: "김태훈", playerCode: "A0512", src: "https://www.samsunglions.com/upload/player/A0512_player_img_square(2).jpg", source: "https://www.samsunglions.com/roster/roster_2.asp?pcode=A0512", checkedAt: "2026-11-21" },
+    "윤정빈": { verifiedName: "윤정빈", officialName: "윤정빈", playerCode: "A0366", src: "https://www.samsunglions.com/upload/player/A0366_player_img_square.jpg", source: "https://www.samsunglions.com/roster/roster_2.asp?pcode=A0366", checkedAt: "2026-11-21" },
+    "김재혁": { verifiedName: "김재혁", officialName: "김재혁", playerCode: "A0467", src: "https://www.samsunglions.com/upload/player/A0467_player_img_square.png", source: "https://www.samsunglions.com/roster/roster_2.asp?pcode=A0467", checkedAt: "2026-11-21" },
+    "김현준": { verifiedName: "김현준", officialName: "김현준", playerCode: "A0451", src: "https://www.samsunglions.com/upload/player/A0451_player_img_square.jpg", source: "https://www.samsunglions.com/roster/roster_2.asp?pcode=A0451", checkedAt: "2026-11-21" },
+    "김백산": { verifiedName: "김백산", officialName: "김백산", playerCode: "A0564", src: "https://www.samsunglions.com/upload/player/A0564_player_img_square(2).png", source: "https://www.samsunglions.com/roster/roster_2.asp?pcode=A0564", checkedAt: "2026-11-21" },
+    "김서준": { verifiedName: "김서준", officialName: "김서준", playerCode: "A0470", src: "https://www.samsunglions.com/upload/player/A0470_player_img_square.jpg", source: "https://www.samsunglions.com/roster/roster_2.asp?pcode=A0470", checkedAt: "2026-11-21" },
+  },
   photoPolicy: {
-    note: "공식 또는 제공된 프로필 사진 중 사용 권한과 선수 이름이 확인된 사진만 표시합니다. 현재 등록된 프로필 사진이 없어 기본 실루엣을 사용합니다. 과거 경기·기사 사진은 카드에 사용하지 않습니다.",
+    note: "삼성 라이온즈 공식 선수 프로필을 이름·포지션·선수 코드와 대조해 외부 링크로 표시합니다. 저작권은 구단에 있으며 재배포 라이선스를 의미하지 않습니다. 사진 미확보 또는 로드 실패 시에만 기본 실루엣을 사용합니다. 경기·기사 사진은 사용하지 않습니다.",
     defaultAlt: "삼성 라이온즈 기본 프로필 이미지",
   },
 

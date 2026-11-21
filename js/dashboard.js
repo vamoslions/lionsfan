@@ -528,6 +528,23 @@
   let rosterFilter = "전체";
 
   const roster = Array.isArray(DATA.roster) ? DATA.roster : [];
+  const DEFAULT_PROFILE = "assets/players/default.svg";
+
+  // Image errors do not bubble; capture handles lazy-loaded and re-rendered cards.
+  // Remove the photo marker before retrying so a missing default cannot loop.
+  if (dashRoster) dashRoster.addEventListener("error", (event) => {
+    const image = event.target;
+    if (!(image instanceof HTMLImageElement) || image.dataset.profileState !== "official") return;
+    image.dataset.profileState = "fallback";
+    image.src = DEFAULT_PROFILE;
+    image.alt = `${image.dataset.playerName} 프로필 로드 실패 · 기본 실루엣`;
+    image.style.objectPosition = "50% 50%";
+    const card = image.closest(".dash-player");
+    if (card) {
+      card.classList.remove("has-photo");
+      card.classList.add("no-photo");
+    }
+  }, true);
 
   function playerCard(player) {
     const name = escapeHTML(player.name);
@@ -535,7 +552,7 @@
     const ig = DATA.instagramAccounts && DATA.instagramAccounts[player.name];
     const profile = DATA.playerProfiles && DATA.playerProfiles[player.name];
     const hasPhoto = Boolean(profile && profile.src && profile.verifiedName === player.name);
-    const photo = hasPhoto ? profile.src : "assets/players/default.svg";
+    const photo = hasPhoto ? profile.src : DEFAULT_PROFILE;
     const positions = Array.isArray(meta.positions) ? meta.positions.join(" · ") : "";
     const stat = player.stat
       ? `<span class="dp-stat"><b>${escapeHTML(player.stat.value)}</b>${escapeHTML(player.stat.label)}</span>`
@@ -547,7 +564,7 @@
     return `
       <article class="dash-player ${hasPhoto ? "has-photo" : "no-photo"}">
         <span class="dp-photo">
-          <img src="${escapeHTML(photo)}" alt="${name} ${hasPhoto ? "선수 프로필 사진" : "프로필 미제공 · 기본 실루엣"}" loading="lazy" referrerpolicy="no-referrer" style="object-position:${escapeHTML(hasPhoto ? profile.objectPosition || "50% 25%" : "50% 50%")}" />
+          <img src="${escapeHTML(photo)}" alt="${name} ${hasPhoto ? "선수 프로필 사진" : "프로필 미제공 · 기본 실루엣"}" data-player-name="${name}" data-profile-state="${hasPhoto ? "official" : "fallback"}" loading="lazy" referrerpolicy="no-referrer" style="object-position:${escapeHTML(hasPhoto ? profile.objectPosition || "50% 25%" : "50% 50%")}" />
           <span class="dp-photo-tag">${escapeHTML(player.tag)}</span>
         </span>
         <span class="dp-body">
@@ -587,13 +604,13 @@
   if (rosterSearch) rosterSearch.addEventListener("input", renderRoster);
   renderRoster();
 
-  /* 사진 출처 */
+  /* Official profile sources, not the archived Commons game photographs. */
   const photoCredits = $("#photoCredits");
-  if (photoCredits && Array.isArray(DATA.photoCredits)) {
-    photoCredits.innerHTML = DATA.photoCredits.map((credit) => `
+  if (photoCredits && DATA.playerProfiles) {
+    photoCredits.innerHTML = Object.entries(DATA.playerProfiles).map(([name, profile]) => `
       <li>
-        <a href="${escapeHTML(credit.href)}" target="_blank" rel="noopener">${escapeHTML(credit.name)}</a>
-        <span>${escapeHTML(credit.author)} · ${escapeHTML(credit.license)}${credit.period ? ` · ${escapeHTML(credit.period)}` : ""}</span>
+        <a href="${escapeHTML(profile.source)}" target="_blank" rel="noopener">${escapeHTML(name)}</a>
+        <span>삼성 라이온즈 공식 프로필 · ${escapeHTML(profile.playerCode)} · 확인 ${escapeHTML(profile.checkedAt)}</span>
       </li>`).join("");
   }
 
